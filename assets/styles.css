@@ -40,7 +40,7 @@ button { cursor: pointer; }
 }
 .tool-tabs::-webkit-scrollbar { display: none; }
 .tool-tab {
-  flex: 0 0 auto; padding: 12px 18px; border: 1px solid #b9b9b9;
+  flex: 0 0 auto; padding: 12px 18px; border: 1px solid #eeeeee;
   border-radius: 999px; background: #ffffff; color: #242424;
   font-size: 15px; font-weight: 800; white-space: nowrap;
   box-shadow: 0 5px 14px rgba(70, 141, 205, .07);
@@ -48,7 +48,7 @@ button { cursor: pointer; }
 }
 .tool-tab:hover {
   transform: translateY(-2px);
-  border-color: #777777;
+  border-color: #d8d8d8;
   color: #111111;
   box-shadow: 0 8px 18px rgba(0, 0, 0, .07);
 }
@@ -69,19 +69,15 @@ h1 { margin: 18px 0 14px; font-size: clamp(42px, 8vw, 78px); line-height: .97; l
 .hero p { margin: 0; max-width: 650px; color: var(--muted); font-size: 18px; }
 .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding-bottom: 72px; }
 .tool-card {
-  background: var(--card); border: 1px solid #d2d2d2; border-radius: var(--radius);
+  background: var(--card); border: 1px solid #eeeeee; border-radius: var(--radius);
   padding: 24px; min-height: 180px; box-shadow: var(--shadow);
   transition: transform .18s ease, border-color .18s ease;
 }
-.tool-card:hover { transform: translateY(-3px); border-color: #bdbdbd; }
+.tool-card:hover { transform: translateY(-3px); border-color: #dddddd; }
 .icon {
   width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px;
   background: #111111; color: #fff; font-size: 22px; margin-bottom: 28px;
   box-shadow: 0 6px 16px rgba(0,0,0,.10);
-}
-.tool-card:nth-child(even) .icon {
-  background: var(--accent);
-  box-shadow: 0 6px 16px rgba(10,132,255,.18);
 }
 .tool-card h2 { margin: 0 0 6px; font-size: 22px; letter-spacing: -.035em; }
 .tool-card p { margin: 0; color: var(--muted); font-size: 14px; }
@@ -173,7 +169,7 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
 .bottom-tabs .tool-tab {
   padding: 9px 13px;
   font-size: 13px;
-  border-color: #a9a9a9;
+  border-color: #eeeeee;
   box-shadow: none;
 }
 .bottom-tabs .tool-tab:hover {
