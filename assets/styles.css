@@ -4,9 +4,9 @@
   --ink: #10243a;
   --muted: #60758a;
   --line: #dceaf7;
-  --accent: #3a9bff;
-  --accent-strong: #1677d2;
-  --accent-soft: #e8f4ff;
+  --accent: #0A84FF;
+  --accent-strong: #0066CC;
+  --accent-soft: #E8F3FF;
   --yellow: #ffd95a;
   --shadow: 0 16px 45px rgba(40, 126, 210, .10);
   --radius: 24px;
@@ -42,7 +42,7 @@ button { cursor: pointer; }
 }
 .tool-tabs::-webkit-scrollbar { display: none; }
 .tool-tab {
-  flex: 0 0 auto; padding: 12px 18px; border: 1px solid #cfe4f8;
+  flex: 0 0 auto; padding: 12px 18px; border: 1px solid #C9E2FA;
   border-radius: 999px; background: rgba(255,255,255,.92); color: #4f6f8d;
   font-size: 15px; font-weight: 800; white-space: nowrap;
   box-shadow: 0 5px 14px rgba(70, 141, 205, .07);
@@ -50,14 +50,14 @@ button { cursor: pointer; }
 }
 .tool-tab:hover {
   transform: translateY(-2px);
-  border-color: #8fc9ff;
+  border-color: #70B7FF;
   color: var(--accent-strong);
   box-shadow: 0 8px 18px rgba(70, 141, 205, .12);
 }
 .tool-tab.active {
-  background: linear-gradient(135deg, #53adff, var(--accent));
+  background: linear-gradient(135deg, #2F95FF, var(--accent));
   border-color: var(--accent); color: #fff;
-  box-shadow: 0 8px 20px rgba(58,155,255,.25);
+  box-shadow: 0 8px 20px rgba(10,132,255,.26);
   view-transition-name: active-tab;
 }
 
@@ -75,7 +75,7 @@ h1 { margin: 18px 0 14px; font-size: clamp(42px, 8vw, 78px); line-height: .97; l
   padding: 24px; min-height: 180px; box-shadow: var(--shadow);
   transition: transform .18s ease, border-color .18s ease;
 }
-.tool-card:hover { transform: translateY(-3px); border-color: #9fd0ff; }
+.tool-card:hover { transform: translateY(-3px); border-color: #8BC5FF; }
 .icon {
   width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px;
   background: var(--accent-soft); font-size: 22px; margin-bottom: 28px;
@@ -104,7 +104,7 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
 .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
 .btn {
   border: 0; border-radius: 14px; padding: 12px 17px; font-weight: 800;
-  background: linear-gradient(135deg, #53adff, var(--accent)); color: #fff; box-shadow: 0 8px 20px rgba(58,155,255,.24);
+  background: linear-gradient(135deg, #2F95FF, var(--accent)); color: #fff; box-shadow: 0 8px 20px rgba(10,132,255,.24);
 }
 .btn.secondary { background: #eef7ff; color: var(--accent-strong); box-shadow: none; }
 .result {
