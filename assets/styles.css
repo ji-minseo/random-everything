@@ -231,7 +231,7 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
   .grid { grid-template-columns: 1fr; gap: 12px; }
   .tool-card {
     min-height: 0;
-    padding: 18px;
+    padding: 14px 15px;
     display: grid;
     grid-template-columns: 60px minmax(0, 1fr);
     grid-template-rows: auto auto;
