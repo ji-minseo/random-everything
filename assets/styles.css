@@ -149,6 +149,34 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
 .team h3 { margin: 0 0 8px; font-size: 15px; }
 .team ul { margin: 0; padding-left: 20px; color: var(--muted); }
 
+
+.more-tools {
+  margin: -2px 0 12px;
+  padding: 18px 0 6px;
+}
+.more-tools-label {
+  margin-bottom: 10px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -.01em;
+}
+.bottom-tabs {
+  padding: 0 0 14px;
+  border-bottom: 0;
+  gap: 7px;
+  view-transition-name: none;
+}
+.bottom-tabs .tool-tab {
+  padding: 9px 13px;
+  font-size: 13px;
+  box-shadow: none;
+}
+.bottom-tabs .tool-tab.active {
+  view-transition-name: none;
+  box-shadow: 0 5px 14px rgba(10,132,255,.18);
+}
+
 .ad-slot {
   min-height: 90px; margin: 26px 0; border: 1px dashed #dedee8; border-radius: 18px;
   display: grid; place-items: center; color: #aaaab6; font-size: 12px;
@@ -181,6 +209,8 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
   .toplink { display: none; }
   .tool-tabs { flex-wrap: nowrap; margin-right: -16px; padding-right: 16px; gap: 8px; }
   .tool-tab { padding: 11px 15px; font-size: 14px; }
+  .bottom-tabs { margin-right: -16px; padding-right: 16px; }
+  .bottom-tabs .tool-tab { padding: 9px 12px; font-size: 13px; }
   .grid { grid-template-columns: 1fr; }
   .hero { padding-top: 38px; }
   .tool-layout { padding-top: 28px; }
