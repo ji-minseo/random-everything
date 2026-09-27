@@ -224,10 +224,10 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
 
 @media (max-width: 720px) {
   .toplink { display: none; }
-  .tool-tabs { flex-wrap: nowrap; margin-right: -16px; padding-right: 16px; gap: 8px; }
-  .tool-tab { padding: 11px 15px; font-size: 14px; }
-  .bottom-tabs { margin-right: -16px; padding-right: 16px; }
-  .bottom-tabs .tool-tab { padding: 9px 12px; font-size: 13px; }
+  .tool-tabs { flex-wrap: nowrap; margin-right: -16px; padding: 6px 16px 14px 0; gap: 7px; }
+  .tool-tab { padding: 9px 12px; font-size: 13px; }
+  .bottom-tabs { margin-right: -16px; padding-right: 16px; gap: 6px; }
+  .bottom-tabs .tool-tab { padding: 8px 11px; font-size: 12.5px; }
   .grid { grid-template-columns: 1fr; gap: 12px; }
   .tool-card {
     min-height: 0;
