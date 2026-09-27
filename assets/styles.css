@@ -40,15 +40,15 @@ button { cursor: pointer; }
 }
 .tool-tabs::-webkit-scrollbar { display: none; }
 .tool-tab {
-  flex: 0 0 auto; padding: 12px 18px; border: 1px solid #f7f7f7;
+  flex: 0 0 auto; padding: 12px 18px; border: 1px solid #d8d8d8;
   border-radius: 999px; background: #ffffff; color: #242424;
   font-size: 15px; font-weight: 800; white-space: nowrap;
-  box-shadow: 0 7px 20px rgba(0, 0, 0, .07);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, .07);
   transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease, box-shadow .18s ease;
 }
 .tool-tab:hover {
   transform: translateY(-2px);
-  border-color: #efefef;
+  border-color: #bdbdbd;
   color: #111111;
   box-shadow: 0 10px 24px rgba(0, 0, 0, .10);
 }
@@ -69,15 +69,16 @@ h1 { margin: 18px 0 14px; font-size: clamp(42px, 8vw, 78px); line-height: .97; l
 .hero p { margin: 0; max-width: 650px; color: var(--muted); font-size: 18px; }
 .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding-bottom: 72px; }
 .tool-card {
-  background: var(--card); border: 1px solid #f8f8f8; border-radius: var(--radius);
+  background: var(--card); border: 1px solid #dddddd; border-radius: var(--radius);
   padding: 24px; min-height: 180px; box-shadow: var(--shadow);
   transition: transform .18s ease, border-color .18s ease;
 }
-.tool-card:hover { transform: translateY(-3px); border-color: #dddddd; }
+.tool-card:hover { transform: translateY(-3px); border-color: #bdbdbd; }
 .icon {
-  width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px;
-  background: #111111; color: #fff; font-size: 22px; margin-bottom: 28px;
-  box-shadow: 0 6px 16px rgba(0,0,0,.10);
+  width: 60px; height: 60px; display: grid; place-items: center; border-radius: 18px;
+  background: #ffffff; color: var(--ink); font-size: 28px; margin-bottom: 28px;
+  border: 1px solid #e1e1e1;
+  box-shadow: 0 7px 18px rgba(0,0,0,.07);
 }
 .tool-card h2 { margin: 0 0 6px; font-size: 22px; letter-spacing: -.035em; }
 .tool-card p { margin: 0; color: var(--muted); font-size: 14px; }
@@ -169,8 +170,8 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
 .bottom-tabs .tool-tab {
   padding: 9px 13px;
   font-size: 13px;
-  border-color: #f7f7f7;
-  box-shadow: 0 5px 14px rgba(0,0,0,.06);
+  border-color: #d8d8d8;
+  box-shadow: 0 4px 12px rgba(0,0,0,.055);
 }
 .bottom-tabs .tool-tab:hover {
   transform: none;
