@@ -14,6 +14,9 @@ function shuffle(arr) {
   }
   return copy;
 }
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 async function copyText(text, button) {
   try {
     await navigator.clipboard.writeText(text);
@@ -24,12 +27,15 @@ async function copyText(text, button) {
     window.prompt("Copy this:", text);
   }
 }
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+}
 
 function initColor() {
   const swatch = $("#swatch");
   const code = $("#colorCode");
   const generate = () => {
-    const color = "#" + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, "0").toUpperCase();
+    const color = "#" + Math.floor(Math.random() * 0x1000000).toString(16).padStart(6, "0").toUpperCase();
     swatch.style.background = color;
     code.textContent = color;
   };
@@ -50,7 +56,7 @@ function initChoice() {
 }
 
 function colorsFor(count) {
-  const palette = ["#7C6DF2","#FFB5C8","#FFD95A","#76D7C4","#8CC8FF","#C7A6FF","#FFAA7A","#A7E46B"];
+  const palette = ["#0A84FF","#65B5FF","#FFD95A","#76D7C4","#FFB5C8","#8CC8FF","#FFAA7A","#A7E46B"];
   return Array.from({length: count}, (_, i) => palette[i % palette.length]);
 }
 function wheelGradient(items) {
@@ -64,7 +70,7 @@ function initWheel() {
   let rotation = 0;
   const sync = () => {
     const items = parseItems($("#wheelItems").value);
-    wheel.style.background = items.length > 1 ? wheelGradient(items) : "#efedff";
+    wheel.style.background = items.length > 1 ? wheelGradient(items) : "#e8f3ff";
   };
   $("#wheelItems").addEventListener("input", sync);
   $("#spin").addEventListener("click", () => {
@@ -76,8 +82,10 @@ function initWheel() {
     const winnerIndex = Math.floor(Math.random() * items.length);
     const step = 360 / items.length;
     const targetCenter = winnerIndex * step + step / 2;
-    const extra = 360 * (5 + Math.floor(Math.random() * 3));
-    rotation += extra + (360 - ((rotation + targetCenter) % 360));
+    const normalized = ((rotation % 360) + 360) % 360;
+    const desired = (360 - targetCenter) % 360;
+    const delta = (desired - normalized + 360) % 360;
+    rotation += 360 * (5 + Math.floor(Math.random() * 3)) + delta;
     wheel.style.transform = `rotate(${rotation}deg)`;
     output.textContent = "Spinning…";
     setTimeout(() => output.textContent = items[winnerIndex], 3250);
@@ -85,6 +93,11 @@ function initWheel() {
   sync();
 }
 
+function renderGroups(container, groups, label="Group") {
+  container.innerHTML = groups.map((group, i) =>
+    `<section class="team"><h3>${label} ${i+1}</h3><ul>${group.map(n => `<li>${escapeHtml(n)}</li>`).join("")}</ul></section>`
+  ).join("");
+}
 function initTeams() {
   $("#makeTeams").addEventListener("click", () => {
     const names = parseItems($("#names").value);
@@ -96,13 +109,8 @@ function initTeams() {
     }
     const teams = Array.from({length: Math.min(count, names.length)}, () => []);
     shuffle(names).forEach((name, index) => teams[index % teams.length].push(name));
-    container.innerHTML = teams.map((team, i) =>
-      `<section class="team"><h3>Team ${i+1}</h3><ul>${team.map(n => `<li>${escapeHtml(n)}</li>`).join("")}</ul></section>`
-    ).join("");
+    renderGroups(container, teams, "Team");
   });
-}
-function escapeHtml(str) {
-  return str.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 }
 
 const pictionary = {
@@ -117,9 +125,92 @@ function initPictionary() {
   draw();
 }
 
+function initNumber() {
+  const output = $("#numberResult");
+  const generate = () => {
+    let min = Math.trunc(Number($("#minNumber").value));
+    let max = Math.trunc(Number($("#maxNumber").value));
+    let count = Math.max(1, Math.min(20, Math.trunc(Number($("#numberCount").value)) || 1));
+    if (!Number.isFinite(min) || !Number.isFinite(max)) {
+      output.textContent = "Enter valid numbers";
+      return;
+    }
+    if (min > max) [min, max] = [max, min];
+    const nums = Array.from({length: count}, () => randomInt(min, max));
+    output.textContent = nums.join(", ");
+  };
+  $("#generateNumber").addEventListener("click", generate);
+  generate();
+}
+
+const firstNames = ["Avery","Mia","Noah","Liam","Emma","Lucas","Sofia","Leo","Chloe","Ethan","Maya","Theo","Ella","Owen","Lily","Kai","Nora","Milo","Zoe","Finn","Ivy","Aria","Jude","Ruby","Ezra","Luna","Alex","Sam","Taylor","Jordan","Riley","Casey","Jamie","Morgan","Quinn","Rowan","Skyler","Parker","Reese","Cameron"];
+const lastNames = ["Anderson","Bennett","Brooks","Carter","Clark","Collins","Cooper","Davis","Evans","Foster","Gray","Green","Hall","Hayes","Hill","Howard","James","Kelly","Lee","Lewis","Martin","Miller","Moore","Morgan","Parker","Reed","Rivera","Scott","Smith","Stone","Taylor","Thomas","Turner","Walker","Ward","White","Wilson","Wright","Young","King"];
+function initName() {
+  const output = $("#nameResult");
+  const generate = () => {
+    const count = Math.max(1, Math.min(10, Math.trunc(Number($("#nameCount").value)) || 1));
+    const names = new Set();
+    while (names.size < count) names.add(`${sample(firstNames)} ${sample(lastNames)}`);
+    output.textContent = [...names].join(" · ");
+  };
+  $("#generateName").addEventListener("click", generate);
+  generate();
+}
+
+const randomWords = {
+  noun: ["anchor","apple","beacon","bridge","candle","castle","cloud","comet","crystal","door","forest","garden","harbor","island","jacket","key","lantern","mirror","ocean","paper","river","rocket","shadow","signal","star","stone","tower","train","window","wing"],
+  verb: ["build","catch","climb","dance","drift","explore","float","gather","glow","imagine","jump","listen","mix","open","paint","race","remember","roll","search","share","sketch","spin","travel","wander","whisper","write","zoom","balance","create","discover"],
+  adjective: ["bright","calm","clever","cozy","curious","gentle","golden","happy","hidden","icy","lucky","messy","quiet","rapid","round","shiny","silent","soft","strange","sunny","tiny","wild","witty","brave","crisp","dreamy","fresh","playful","simple","vivid"]
+};
+function initWord() {
+  const output = $("#randomWordResult");
+  const generate = () => {
+    const category = $("#wordCategory").value;
+    const count = Math.max(1, Math.min(12, Math.trunc(Number($("#wordCount").value)) || 1));
+    const pool = category === "all" ? [...randomWords.noun, ...randomWords.verb, ...randomWords.adjective] : randomWords[category];
+    output.textContent = shuffle(pool).slice(0, Math.min(count, pool.length)).join(" · ");
+  };
+  $("#generateWord").addEventListener("click", generate);
+  generate();
+}
+
+function initGroups() {
+  $("#makeGroups").addEventListener("click", () => {
+    const items = parseItems($("#groupItems").value);
+    const size = Math.max(1, Math.trunc(Number($("#groupSize").value)) || 2);
+    const container = $("#groupsResult");
+    if (items.length < 2) {
+      container.innerHTML = "<div class='team'><h3>Add at least two items</h3></div>";
+      return;
+    }
+    const shuffled = shuffle(items);
+    const groups = [];
+    for (let i = 0; i < shuffled.length; i += size) groups.push(shuffled.slice(i, i + size));
+    renderGroups(container, groups, "Group");
+  });
+}
+
+function initYesNo() {
+  const output = $("#yesNoResult");
+  const history = $("#yesNoHistory");
+  const answers = [];
+  $("#answerYesNo").addEventListener("click", () => {
+    const answer = Math.random() < 0.5 ? "Yes" : "No";
+    output.textContent = answer;
+    answers.unshift(answer);
+    answers.splice(5);
+    history.textContent = answers.length > 1 ? "Recent: " + answers.join(" · ") : "";
+  });
+}
+
 const tool = document.body.dataset.tool;
 if (tool === "color") initColor();
 if (tool === "choice") initChoice();
 if (tool === "wheel") initWheel();
 if (tool === "teams") initTeams();
 if (tool === "pictionary") initPictionary();
+if (tool === "number") initNumber();
+if (tool === "name") initName();
+if (tool === "word") initWord();
+if (tool === "groups") initGroups();
+if (tool === "yesno") initYesNo();
