@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ji-minseo.github.io/random-everything/sitemap.xml
+Sitemap: https://random.everytinytool.com/sitemap.xml
