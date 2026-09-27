@@ -1,20 +1,23 @@
 :root {
-  --bg: #f7f7fb;
+  --bg: #f4faff;
   --card: #ffffff;
-  --ink: #17171c;
-  --muted: #6f7080;
-  --line: #e7e7ef;
-  --accent: #7c6df2;
-  --accent-soft: #efedff;
+  --ink: #10243a;
+  --muted: #60758a;
+  --line: #dceaf7;
+  --accent: #3a9bff;
+  --accent-strong: #1677d2;
+  --accent-soft: #e8f4ff;
   --yellow: #ffd95a;
-  --shadow: 0 16px 45px rgba(30, 28, 55, .08);
+  --shadow: 0 16px 45px rgba(40, 126, 210, .10);
   --radius: 24px;
 }
 * { box-sizing: border-box; }
 html { color-scheme: light; }
 body {
   margin: 0;
-  background: radial-gradient(circle at top left, #fff 0, var(--bg) 38rem);
+  background:
+    radial-gradient(circle at top left, #ffffff 0, #f8fcff 22rem, transparent 42rem),
+    linear-gradient(180deg, #f8fcff 0, var(--bg) 100%);
   color: var(--ink);
   font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.5;
@@ -32,28 +35,37 @@ button { cursor: pointer; }
 .toplink { color: var(--muted); font-size: 14px; font-weight: 650; }
 
 .tool-tabs {
-  display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
-  padding: 6px 0 18px; border-bottom: 1px solid var(--line);
+  display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none;
+  padding: 8px 0 20px; border-bottom: 1px solid var(--line);
   -webkit-overflow-scrolling: touch;
+  view-transition-name: tool-tabs;
 }
 .tool-tabs::-webkit-scrollbar { display: none; }
 .tool-tab {
-  flex: 0 0 auto; padding: 9px 13px; border: 1px solid var(--line);
-  border-radius: 999px; background: rgba(255,255,255,.72); color: var(--muted);
-  font-size: 13px; font-weight: 760; white-space: nowrap;
-  transition: background .15s ease, border-color .15s ease, color .15s ease, transform .15s ease;
+  flex: 0 0 auto; padding: 12px 18px; border: 1px solid #cfe4f8;
+  border-radius: 999px; background: rgba(255,255,255,.92); color: #4f6f8d;
+  font-size: 15px; font-weight: 800; white-space: nowrap;
+  box-shadow: 0 5px 14px rgba(70, 141, 205, .07);
+  transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease, box-shadow .18s ease;
 }
-.tool-tab:hover { transform: translateY(-1px); border-color: #cbc7f7; color: var(--ink); }
+.tool-tab:hover {
+  transform: translateY(-2px);
+  border-color: #8fc9ff;
+  color: var(--accent-strong);
+  box-shadow: 0 8px 18px rgba(70, 141, 205, .12);
+}
 .tool-tab.active {
-  background: var(--accent); border-color: var(--accent); color: #fff;
-  box-shadow: 0 6px 16px rgba(124,109,242,.18);
+  background: linear-gradient(135deg, #53adff, var(--accent));
+  border-color: var(--accent); color: #fff;
+  box-shadow: 0 8px 20px rgba(58,155,255,.25);
+  view-transition-name: active-tab;
 }
 
 .hero { padding: 58px 0 42px; max-width: 780px; }
 .eyebrow {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 7px 11px; border-radius: 999px; background: var(--accent-soft);
-  color: #5749c8; font-size: 13px; font-weight: 750;
+  color: var(--accent-strong); font-size: 13px; font-weight: 750;
 }
 h1 { margin: 18px 0 14px; font-size: clamp(42px, 8vw, 78px); line-height: .97; letter-spacing: -.065em; }
 .hero p { margin: 0; max-width: 650px; color: var(--muted); font-size: 18px; }
@@ -63,7 +75,7 @@ h1 { margin: 18px 0 14px; font-size: clamp(42px, 8vw, 78px); line-height: .97; l
   padding: 24px; min-height: 180px; box-shadow: var(--shadow);
   transition: transform .18s ease, border-color .18s ease;
 }
-.tool-card:hover { transform: translateY(-3px); border-color: #cac7f5; }
+.tool-card:hover { transform: translateY(-3px); border-color: #9fd0ff; }
 .icon {
   width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px;
   background: var(--accent-soft); font-size: 22px; margin-bottom: 28px;
@@ -92,12 +104,12 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
 .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
 .btn {
   border: 0; border-radius: 14px; padding: 12px 17px; font-weight: 800;
-  background: var(--accent); color: #fff; box-shadow: 0 8px 20px rgba(124,109,242,.22);
+  background: linear-gradient(135deg, #53adff, var(--accent)); color: #fff; box-shadow: 0 8px 20px rgba(58,155,255,.24);
 }
-.btn.secondary { background: #f1f1f6; color: var(--ink); box-shadow: none; }
+.btn.secondary { background: #eef7ff; color: var(--accent-strong); box-shadow: none; }
 .result {
   margin-top: 22px; min-height: 88px; border: 1px dashed #cfceda;
-  background: #fafafe; border-radius: 18px; padding: 20px;
+  background: #f7fbff; border-radius: 18px; padding: 20px;
 }
 .result-label { color: var(--muted); font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: .06em; }
 .result-value { margin-top: 4px; font-size: clamp(28px, 5vw, 44px); font-weight: 900; letter-spacing: -.04em; overflow-wrap: anywhere; }
@@ -127,7 +139,7 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
 .wheel-box .wheel { display: grid; place-items: center; }
 
 .teams { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin-top: 18px; }
-.team { padding: 16px; border-radius: 16px; background: #f8f7ff; border: 1px solid #e5e2ff; }
+.team { padding: 16px; border-radius: 16px; background: #f3f9ff; border: 1px solid #d9ebfb; }
 .team h3 { margin: 0 0 8px; font-size: 15px; }
 .team ul { margin: 0; padding-left: 20px; color: var(--muted); }
 
@@ -136,9 +148,33 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
   display: grid; place-items: center; color: #aaaab6; font-size: 12px;
 }
 
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(active-tab),
+::view-transition-new(active-tab) {
+  animation-duration: .34s;
+  animation-timing-function: cubic-bezier(.22,.8,.2,1);
+  mix-blend-mode: normal;
+}
+
+::view-transition-group(active-tab) {
+  animation-duration: .34s;
+  animation-timing-function: cubic-bezier(.22,.8,.2,1);
+}
+
 @media (max-width: 720px) {
   .toplink { display: none; }
-  .tool-tabs { margin-right: -16px; padding-right: 16px; }
+  .tool-tabs { margin-right: -16px; padding-right: 16px; gap: 8px; }
+  .tool-tab { padding: 11px 15px; font-size: 14px; }
   .grid { grid-template-columns: 1fr; }
   .hero { padding-top: 38px; }
   .tool-layout { padding-top: 28px; }
