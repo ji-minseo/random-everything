@@ -80,12 +80,12 @@ h1 { margin: 18px 0 14px; font-size: clamp(42px, 8vw, 78px); line-height: .97; l
   border: none;
   box-shadow: 0 5px 14px rgba(0,0,0,.035);
 }
-.tool-card:nth-child(2) .icon { background: #FBE9C9; }
+.tool-card:nth-child(2) .icon { background: #E8E1FF; }
 .tool-card:nth-child(3) .icon { background: #FFF3BF; }
 .tool-card:nth-child(4) .icon { background: #DFF2D8; }
 .tool-card:nth-child(5) .icon { background: #DDF1EE; }
 .tool-card:nth-child(6) .icon { background: #DCEBFF; }
-.tool-card:nth-child(7) .icon { background: #E8E1FF; }
+.tool-card:nth-child(7) .icon { background: #FBE9C9; }
 .tool-card:nth-child(8) .icon { background: #F2DFF6; }
 .tool-card:nth-child(9) .icon { background: #F8E0EC; }
 .tool-card:nth-child(10) .icon { background: #E8EEF5; }
