@@ -203,6 +203,29 @@ function initYesNo() {
   });
 }
 
+
+function addBottomToolTabs() {
+  const topTabs = document.querySelector(".tool-tabs");
+  const adSlot = document.querySelector(".ad-slot");
+  if (!topTabs || !adSlot || document.querySelector(".more-tools")) return;
+
+  const section = document.createElement("section");
+  section.className = "more-tools";
+
+  const label = document.createElement("div");
+  label.className = "more-tools-label";
+  label.textContent = "Try another random tool";
+
+  const bottomTabs = topTabs.cloneNode(true);
+  bottomTabs.classList.add("bottom-tabs");
+  bottomTabs.setAttribute("aria-label", "More random tools");
+
+  section.append(label, bottomTabs);
+  adSlot.insertAdjacentElement("afterend", section);
+}
+
+addBottomToolTabs();
+
 const tool = document.body.dataset.tool;
 if (tool === "color") initColor();
 if (tool === "choice") initChoice();
