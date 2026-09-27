@@ -172,6 +172,13 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
   font-size: 13px;
   box-shadow: none;
 }
+.bottom-tabs .tool-tab:hover {
+  transform: none;
+  background: var(--accent-soft);
+  border-color: #70B7FF;
+  color: var(--accent-strong);
+  box-shadow: none;
+}
 .bottom-tabs .tool-tab.active {
   view-transition-name: none;
   box-shadow: 0 5px 14px rgba(10,132,255,.18);
