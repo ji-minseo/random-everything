@@ -200,6 +200,20 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
 }
 
 
+
+.network { margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--line); }
+.network-label { margin-bottom: 12px; color: var(--muted); font-size: 13px; font-weight: 700; }
+.network-label strong { color: var(--ink); }
+.network-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+.network-card { display: grid; grid-template-columns: 48px minmax(0,1fr); gap: 13px; align-items: center; padding: 17px; border: 1px solid #ececec; border-radius: 19px; transition: transform .18s ease, border-color .18s ease; }
+.network-card:hover { transform: translateY(-2px); border-color: #cfcfcf; }
+.network-card.calculate { background: #F4FBF8; border-color: #D2EEE5; }
+.network-card.image { background: #FAF8FF; border-color: #E6DEFE; }
+.network-icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 15px; background: rgba(255,255,255,.8); font-size: 23px; }
+.network-card h2 { margin: 0 0 3px; font-size: 17px; letter-spacing: -.025em; }
+.network-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
+.network-card span { display: inline-block; margin-top: 7px; font-size: 12px; font-weight: 800; }
+
 @view-transition {
   navigation: auto;
 }
