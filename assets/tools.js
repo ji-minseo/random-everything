@@ -114,14 +114,27 @@ function initTeams() {
 }
 
 const pictionary = {
-  easy: ["apple","beach","cat","cake","cloud","dog","flower","hat","moon","pizza","rainbow","star","tree","train","umbrella","balloon","book","candle","fish","house"],
-  medium: ["airport","backpack","campfire","dinosaur","firefighter","headphones","iceberg","lighthouse","mermaid","popcorn","robot","skateboard","spaceship","treasure","volcano","waterfall","carousel","detective","jellyfish","telescope"],
-  hard: ["awkward","balance","celebration","confusion","gravity","imagination","invisible","jealousy","mystery","reflection","suspicious","time travel","traffic jam","whisper","zero gravity","déjà vu","daydream","coincidence","disguise","echo"]
+  word: {
+    easy: ["apple","beach","cat","cake","cloud","dog","flower","hat","moon","pizza","rainbow","star","tree","train","umbrella","balloon","book","candle","fish","house"],
+    medium: ["airport","backpack","campfire","dinosaur","firefighter","headphones","iceberg","lighthouse","mermaid","popcorn","robot","skateboard","spaceship","treasure","volcano","waterfall","carousel","detective","jellyfish","telescope"],
+    hard: ["awkward","balance","celebration","confusion","gravity","imagination","invisible","jealousy","mystery","reflection","suspicious","whisper","déjà vu","daydream","coincidence","disguise","echo","symmetry","nostalgia","illusion"]
+  },
+  phrase: {
+    easy: ["walking the dog","birthday cake","riding a bike","building a snowman","flying a kite","reading a book","eating ice cream","jumping in puddles","playing soccer","washing the car","opening a present","making pancakes"],
+    medium: ["missing the bus","lost in a maze","camping in the rain","winning a race","taking a selfie","burning the toast","finding buried treasure","singing in the shower","walking on the moon","chasing a butterfly","stuck in traffic","building a sandcastle"],
+    hard: ["elephant in the room","thinking outside the box","needle in a haystack","raining cats and dogs","piece of cake","break the ice","walking on thin ice","under the weather","once in a blue moon","spill the beans","hit the road","time flies"]
+  }
 };
 function initPictionary() {
   const output = $("#wordResult");
-  const draw = () => output.textContent = sample(pictionary[$("#difficulty").value]);
+  const draw = () => {
+    const type = $("#pictionaryType")?.value || "word";
+    const difficulty = $("#difficulty").value;
+    output.textContent = sample(pictionary[type][difficulty]);
+  };
   $("#newWord").addEventListener("click", draw);
+  $("#pictionaryType")?.addEventListener("change", draw);
+  $("#difficulty").addEventListener("change", draw);
   draw();
 }
 
@@ -149,11 +162,19 @@ function initName() {
   const output = $("#nameResult");
   const generate = () => {
     const count = Math.max(1, Math.min(10, Math.trunc(Number($("#nameCount").value)) || 1));
+    const style = $("#nameStyle")?.value || "full";
     const names = new Set();
-    while (names.size < count) names.add(`${sample(firstNames)} ${sample(lastNames)}`);
+    const maxUnique = style === "first" ? firstNames.length : style === "last" ? lastNames.length : firstNames.length * lastNames.length;
+    const target = Math.min(count, maxUnique);
+    while (names.size < target) {
+      if (style === "first") names.add(sample(firstNames));
+      else if (style === "last") names.add(sample(lastNames));
+      else names.add(`${sample(firstNames)} ${sample(lastNames)}`);
+    }
     output.textContent = [...names].join(" · ");
   };
   $("#generateName").addEventListener("click", generate);
+  $("#nameStyle")?.addEventListener("change", generate);
   generate();
 }
 

@@ -25,16 +25,18 @@
     <a class="tool-tab" href="../yes-or-no/">↔️ Yes / No</a>
   </nav>
   <main class="tool-layout">
-    <div class="tool-head"><a class="breadcrumb" href="../">← All random tools</a><h1>Random Name Generator</h1><p>Generate quick first-and-last name combinations for characters, placeholders, games and creative prompts.</p></div>
+    <div class="tool-head"><a class="breadcrumb" href="../">← All random tools</a><h1>Random Name Generator</h1><p>Generate random first names, last names, or complete first-and-last name combinations for characters, placeholders, games and creative prompts.</p></div>
     <section class="panel">
-      <label for="nameCount">Number of names</label>
-      <input id="nameCount" type="number" min="1" max="10" value="1">
+      <div class="row">
+        <div><label for="nameStyle">Name style</label><select id="nameStyle"><option value="full">First + last name</option><option value="first">First name only</option><option value="last">Last name only</option></select></div>
+        <div><label for="nameCount">Number of names</label><input id="nameCount" type="number" min="1" max="10" value="1"></div>
+      </div>
       <div class="actions"><button id="generateName" class="btn">Generate names</button></div>
       <div class="result compact-result"><div class="result-label">Random name</div><div id="nameResult" class="result-value">—</div></div>
     </section>
     <div class="ad-slot">Future ad space</div>
     <section class="info info-grid">
-      <div class="info-card"><h2>Fast character names</h2><p>Use the generator when a story, game, mockup or example needs a plausible name and you do not want to stop to invent one.</p></div>
+      <div class="info-card"><h2>First and last name generator</h2><p>Generate complete first-and-last name combinations, or switch to first-name-only or last-name-only mode when you need just one part.</p></div>
       <div class="info-card"><h2>Generate a short list</h2><p>Choose from one to ten names at a time, then generate again until a combination fits the tone of your project.</p></div>
       <div class="info-card"><h2>Built-in list</h2><p>The name pool is stored directly in the page, so generation is instant and does not require an external API or account.</p></div>
     </section>
