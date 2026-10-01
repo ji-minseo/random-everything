@@ -3,19 +3,35 @@ const $ = (selector) => document.querySelector(selector);
 function parseItems(value) {
   return value.split(/\n|,/).map(v => v.trim()).filter(Boolean);
 }
+function randomFloat() {
+  if (globalThis.crypto?.getRandomValues) {
+    const a = new Uint32Array(1);
+    crypto.getRandomValues(a);
+    return a[0] / 4294967296;
+  }
+  return randomFloat();
+}
 function sample(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[Math.floor(randomFloat() * arr.length)];
 }
 function shuffle(arr) {
   const copy = [...arr];
   for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(randomFloat() * (i + 1));
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
   return copy;
 }
 function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.floor(randomFloat() * (max - min + 1)) + min;
+}
+function copyButtonText(button, message="Copied!") {
+  const old=button.textContent;button.textContent=message;setTimeout(()=>button.textContent=old,1100);
+}
+function wheelLink(items) {
+  const u=new URL("../wheel-decider/",location.href);
+  u.searchParams.set("items",items.join("\n"));
+  return u.toString();
 }
 async function copyText(text, button) {
   try {
@@ -32,27 +48,57 @@ function escapeHtml(str) {
 }
 
 function initColor() {
-  const swatch = $("#swatch");
-  const code = $("#colorCode");
-  const generate = () => {
-    const color = "#" + Math.floor(Math.random() * 0x1000000).toString(16).padStart(6, "0").toUpperCase();
-    swatch.style.background = color;
-    code.textContent = color;
+  const swatch = $("#swatch"), code = $("#colorCode"), history = [];
+  const hexToRgb = hex => {
+    const n=parseInt(hex.slice(1),16);return {r:(n>>16)&255,g:(n>>8)&255,b:n&255};
   };
-  $("#generate").addEventListener("click", generate);
-  $("#copy").addEventListener("click", (e) => copyText(code.textContent, e.currentTarget));
+  const rgbToHsl = ({r,g,b}) => {
+    r/=255;g/=255;b/=255;const max=Math.max(r,g,b),min=Math.min(r,g,b);let h=0,s=0,l=(max+min)/2;
+    if(max!==min){const d=max-min;s=l>.5?d/(2-max-min):d/(max+min);
+      switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;default:h=(r-g)/d+4}h/=6}
+    return {h:Math.round(h*360),s:Math.round(s*100),l:Math.round(l*100)};
+  };
+  const renderHistory=()=>{
+    const box=$("#colorHistory");box.innerHTML="";
+    history.forEach(hex=>{
+      const b=document.createElement("button");b.type="button";b.className="color-chip";b.title=`Copy ${hex}`;b.style.background=hex;
+      b.addEventListener("click",()=>copyText(hex,b));box.appendChild(b);
+    });
+  };
+  const generate = () => {
+    const color = "#" + randomInt(0,0xFFFFFF).toString(16).padStart(6,"0").toUpperCase();
+    const rgb=hexToRgb(color),hsl=rgbToHsl(rgb);
+    swatch.style.background=color;code.textContent=color;
+    $("#hexValue").textContent=color;
+    $("#rgbValue").textContent=`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+    $("#hslValue").textContent=`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+    history.unshift(color);history.splice(8);renderHistory();
+  };
+  $("#generate").addEventListener("click",generate);
+  $("#copy").addEventListener("click",e=>copyText($("#hexValue").textContent,e.currentTarget));
+  $("#copyHex").addEventListener("click",e=>copyText($("#hexValue").textContent,e.currentTarget));
+  $("#copyRgb").addEventListener("click",e=>copyText($("#rgbValue").textContent,e.currentTarget));
+  $("#copyHsl").addEventListener("click",e=>copyText($("#hslValue").textContent,e.currentTarget));
   generate();
 }
 
 function initChoice() {
-  const output = $("#choiceResult");
-  $("#pick").addEventListener("click", () => {
-    const items = parseItems($("#items").value);
-    output.textContent = items.length ? sample(items) : "Add at least one choice";
+  const output=$("#choiceResult"),input=$("#items"),historyEl=$("#choiceHistory"),countEl=$("#choiceCount");
+  const history=[];
+  const syncCount=()=>{const n=parseItems(input.value).length;countEl.textContent=`${n} choice${n===1?"":"s"}`;$("#spinChoices").disabled=n<2};
+  const renderHistory=()=>historyEl.textContent=history.length>1?"Recent: "+history.join(" · "):"";
+  $("#pick").addEventListener("click",()=>{
+    const items=parseItems(input.value);
+    if(!items.length){output.textContent="Add at least one choice";return}
+    const picked=sample(items);output.textContent=picked;history.unshift(picked);history.splice(5);renderHistory();
+    if($("#removePicked").checked){
+      const i=items.indexOf(picked);items.splice(i,1);input.value=items.join("\n");syncCount();
+    }
   });
-  $("#example").addEventListener("click", () => {
-    $("#items").value = "Pizza\nTacos\nPasta\nSushi";
-  });
+  $("#example").addEventListener("click",()=>{input.value="Pizza\nTacos\nPasta\nSushi";syncCount()});
+  $("#copyChoice").addEventListener("click",e=>copyText(output.textContent,e.currentTarget));
+  $("#spinChoices").addEventListener("click",()=>{const items=parseItems(input.value);if(items.length>=2)location.href=wheelLink(items)});
+  input.addEventListener("input",syncCount);syncCount();
 }
 
 function colorsFor(count) {
@@ -149,10 +195,10 @@ function initWheel() {
     const chars=["✦","●","■","▲"];
     for(let i=0;i<54;i++){
       const piece=document.createElement("i");piece.textContent=chars[i%chars.length];
-      piece.style.left=(10+Math.random()*80)+"%";
-      piece.style.setProperty("--drift",(Math.random()*160-80)+"px");
-      piece.style.setProperty("--delay",(Math.random()*.28)+"s");
-      piece.style.setProperty("--spin",(Math.random()*540+180)+"deg");
+      piece.style.left=(10+randomFloat()*80)+"%";
+      piece.style.setProperty("--drift",(randomFloat()*160-80)+"px");
+      piece.style.setProperty("--delay",(randomFloat()*.28)+"s");
+      piece.style.setProperty("--spin",(randomFloat()*540+180)+"deg");
       piece.style.color=colorsFor(8)[i%8];
       layer.appendChild(piece);
     }
@@ -188,13 +234,13 @@ function initWheel() {
     }
     spinning = true;
     $("#spin").disabled = true;
-    const winnerIndex = Math.floor(Math.random() * items.length);
+    const winnerIndex = Math.floor(randomFloat() * items.length);
     const step = 360 / items.length;
     const targetCenter = winnerIndex * step + step / 2;
     const normalized = ((rotation % 360) + 360) % 360;
     const desired = (360 - targetCenter) % 360;
     const delta = (desired - normalized + 360) % 360;
-    rotation += 360 * (5 + Math.floor(Math.random() * 3)) + delta;
+    rotation += 360 * (5 + Math.floor(randomFloat() * 3)) + delta;
     wheel.style.transform = `rotate(${rotation}deg)`;
     output.textContent = "Spinning…";
     spinSound();
@@ -220,19 +266,25 @@ function renderGroups(container, groups, label="Group") {
     `<section class="team"><h3>${label} ${i+1}</h3><ul>${group.map(n => `<li>${escapeHtml(n)}</li>`).join("")}</ul></section>`
   ).join("");
 }
+function groupsToText(groups,label="Group"){
+  return groups.map((group,i)=>`${label} ${i+1}: ${group.join(", ")}`).join("\n");
+}
 function initTeams() {
-  $("#makeTeams").addEventListener("click", () => {
-    const names = parseItems($("#names").value);
-    const count = Math.max(2, Math.min(Number($("#teamCount").value) || 2, Math.max(2, names.length)));
-    const container = $("#teamsResult");
-    if (names.length < 2) {
-      container.innerHTML = "<div class='team'><h3>Add at least two names</h3></div>";
-      return;
-    }
-    const teams = Array.from({length: Math.min(count, names.length)}, () => []);
-    shuffle(names).forEach((name, index) => teams[index % teams.length].push(name));
-    renderGroups(container, teams, "Team");
-  });
+  let latest=[];
+  const build=()=>{
+    const names=parseItems($("#names").value),count=Math.max(2,Math.min(Number($("#teamCount").value)||2,Math.max(2,names.length)));
+    const container=$("#teamsResult");
+    if(names.length<2){container.innerHTML="<div class='team'><h3>Add at least two names</h3></div>";latest=[];return}
+    latest=Array.from({length:Math.min(count,names.length)},()=>[]);
+    shuffle(names).forEach((person,index)=>latest[index%latest.length].push(person));
+    renderGroups(container,latest,"Team");
+    $("#teamSummary").textContent=`${names.length} people · ${latest.length} teams · sizes ${latest.map(t=>t.length).join(" / ")}`;
+    ["#reshuffleTeams","#copyTeams","#spinTeams"].forEach(s=>$(s).disabled=false);
+  };
+  $("#makeTeams").addEventListener("click",build);
+  $("#reshuffleTeams").addEventListener("click",build);
+  $("#copyTeams").addEventListener("click",e=>latest.length&&copyText(groupsToText(latest,"Team"),e.currentTarget));
+  $("#spinTeams").addEventListener("click",()=>latest.length&&(location.href=wheelLink(latest.map((_,i)=>`Team ${i+1}`))));
 }
 
 const pictionary = {
@@ -378,91 +430,118 @@ function initPictionary() {
 }
 
 function initNumber() {
-  const output = $("#numberResult");
-  const generate = () => {
-    let min = Math.trunc(Number($("#minNumber").value));
-    let max = Math.trunc(Number($("#maxNumber").value));
-    let count = Math.max(1, Math.min(20, Math.trunc(Number($("#numberCount").value)) || 1));
-    if (!Number.isFinite(min) || !Number.isFinite(max)) {
-      output.textContent = "Enter valid numbers";
-      return;
-    }
-    if (min > max) [min, max] = [max, min];
-    const nums = Array.from({length: count}, () => randomInt(min, max));
-    output.textContent = nums.join(", ");
+  const output=$("#numberResult");
+  const generate=()=>{
+    let min=Math.trunc(Number($("#minNumber").value)),max=Math.trunc(Number($("#maxNumber").value));
+    let count=Math.max(1,Math.min(100,Math.trunc(Number($("#numberCount").value))||1));
+    if(!Number.isFinite(min)||!Number.isFinite(max)){output.textContent="Enter valid numbers";return}
+    if(min>max)[min,max]=[max,min];
+    let nums=[];
+    if($("#uniqueNumbers").checked){
+      const range=max-min+1;
+      if(range<=0||range>1000000){output.textContent="Use a smaller range for unique numbers";return}
+      count=Math.min(count,range);
+      const pool=Array.from({length:range},(_,i)=>min+i);
+      nums=shuffle(pool).slice(0,count);
+    }else nums=Array.from({length:count},()=>randomInt(min,max));
+    if($("#sortNumbers").checked)nums.sort((a,b)=>a-b);
+    output.textContent=nums.join(", ");
   };
-  $("#generateNumber").addEventListener("click", generate);
+  $("#generateNumber").addEventListener("click",generate);
+  $("#copyNumbers").addEventListener("click",e=>copyText(output.textContent,e.currentTarget));
   generate();
 }
 
-const firstNames = ["Avery","Mia","Noah","Liam","Emma","Lucas","Sofia","Leo","Chloe","Ethan","Maya","Theo","Ella","Owen","Lily","Kai","Nora","Milo","Zoe","Finn","Ivy","Aria","Jude","Ruby","Ezra","Luna","Alex","Sam","Taylor","Jordan","Riley","Casey","Jamie","Morgan","Quinn","Rowan","Skyler","Parker","Reese","Cameron"];
-const lastNames = ["Anderson","Bennett","Brooks","Carter","Clark","Collins","Cooper","Davis","Evans","Foster","Gray","Green","Hall","Hayes","Hill","Howard","James","Kelly","Lee","Lewis","Martin","Miller","Moore","Morgan","Parker","Reed","Rivera","Scott","Smith","Stone","Taylor","Thomas","Turner","Walker","Ward","White","Wilson","Wright","Young","King"];
+const firstNames = ["Avery","Mia","Noah","Liam","Emma","Lucas","Sofia","Leo","Chloe","Ethan","Maya","Theo","Ella","Owen","Lily","Kai","Nora","Milo","Zoe","Finn","Ivy","Aria","Jude","Ruby","Ezra","Luna","Alex","Sam","Taylor","Jordan","Riley","Casey","Jamie","Morgan","Quinn","Rowan","Skyler","Parker","Reese","Cameron","Amelia","Olivia","Isla","Grace","Hazel","Violet","Lucy","Stella","Claire","Alice","Eva","Naomi","Elena","Iris","Wren","Maeve","June","Rose","Nina","Lena","Henry","Jack","Oliver","Elijah","Mateo","Julian","Asher","Miles","Felix","Silas","Caleb","Eli","Oscar","Arthur","Hugo","Max","Cole","Dean","Nico","Remy","Drew","Blake","Charlie","Logan","Micah","Sage","Emery","Dakota","Harper","Sydney","Bailey","Ariel","Robin","Jesse","Shawn","Devon","Toby","Mason","Evan","Ian","Adam","Aaron","Dylan","Wyatt","Roman","Louis","Simon","Ben","Luke"];
+const lastNames = ["Anderson","Bennett","Brooks","Carter","Clark","Collins","Cooper","Davis","Evans","Foster","Gray","Green","Hall","Hayes","Hill","Howard","James","Kelly","Lee","Lewis","Martin","Miller","Moore","Morgan","Parker","Reed","Rivera","Scott","Smith","Stone","Taylor","Thomas","Turner","Walker","Ward","White","Wilson","Wright","Young","King","Adams","Allen","Bailey","Baker","Bell","Brown","Campbell","Cook","Cox","Diaz","Edwards","Fisher","Flores","Garcia","Gomez","Gonzalez","Griffin","Harris","Hughes","Jackson","Jenkins","Johnson","Jones","Kim","Lopez","Martinez","Mitchell","Murphy","Nelson","Nguyen","Ortiz","Patel","Perez","Perry","Phillips","Price","Ramirez","Roberts","Robinson","Rodriguez","Rogers","Ross","Russell","Sanchez","Sanders","Stewart","Sullivan","Thompson","Torres","Washington","Watson","Williams","Wood","Barnes","Coleman","Powell","Long","Patterson","Henderson","Bryant","Alexander"];
 function initName() {
-  const output = $("#nameResult");
-  const generate = () => {
-    const count = Math.max(1, Math.min(10, Math.trunc(Number($("#nameCount").value)) || 1));
-    const style = $("#nameStyle")?.value || "full";
-    const names = new Set();
-    const maxUnique = style === "first" ? firstNames.length : style === "last" ? lastNames.length : firstNames.length * lastNames.length;
-    const target = Math.min(count, maxUnique);
-    while (names.size < target) {
-      if (style === "first") names.add(sample(firstNames));
-      else if (style === "last") names.add(sample(lastNames));
+  const output=$("#nameResult"),meta=$("#namePoolMeta");
+  const generate=()=>{
+    const count=Math.max(1,Math.min(20,Math.trunc(Number($("#nameCount").value))||1)),style=$("#nameStyle")?.value||"full";
+    const names=new Set(),maxUnique=style==="first"?firstNames.length:style==="last"?lastNames.length:firstNames.length*lastNames.length,target=Math.min(count,maxUnique);
+    while(names.size<target){
+      if(style==="first")names.add(sample(firstNames));
+      else if(style==="last")names.add(sample(lastNames));
       else names.add(`${sample(firstNames)} ${sample(lastNames)}`);
     }
-    output.textContent = [...names].join(" · ");
+    output.textContent=[...names].join(" · ");
+    meta.textContent=`${firstNames.length} first names · ${lastNames.length} last names · ${(firstNames.length*lastNames.length).toLocaleString()} full-name combinations`;
   };
-  $("#generateName").addEventListener("click", generate);
-  $("#nameStyle")?.addEventListener("change", generate);
+  $("#generateName").addEventListener("click",generate);
+  $("#nameStyle")?.addEventListener("change",generate);
+  $("#copyNames").addEventListener("click",e=>copyText(output.textContent.replaceAll(" · ","\n"),e.currentTarget));
   generate();
 }
 
 const randomWords = {
-  noun: ["anchor","apple","beacon","bridge","candle","castle","cloud","comet","crystal","door","forest","garden","harbor","island","jacket","key","lantern","mirror","ocean","paper","river","rocket","shadow","signal","star","stone","tower","train","window","wing"],
-  verb: ["build","catch","climb","dance","drift","explore","float","gather","glow","imagine","jump","listen","mix","open","paint","race","remember","roll","search","share","sketch","spin","travel","wander","whisper","write","zoom","balance","create","discover"],
-  adjective: ["bright","calm","clever","cozy","curious","gentle","golden","happy","hidden","icy","lucky","messy","quiet","rapid","round","shiny","silent","soft","strange","sunny","tiny","wild","witty","brave","crisp","dreamy","fresh","playful","simple","vivid"]
+  noun: ["anchor","apple","beacon","bridge","candle","castle","cloud","comet","crystal","door","forest","garden","harbor","island","jacket","key","lantern","mirror","ocean","paper","river","rocket","shadow","signal","star","stone","tower","train","window","wing","planet","meadow","bottle","camera","pocket","pencil","blanket","button","forest","helmet","market","museum","puzzle","ribbon","saddle","screen","shelter","ticket","tunnel","wallet","basket","feather","hammer","ladder","magnet","pillow","statue","temple","village","whistle","branch","desert","engine","fountain","garage","island","kitten","notebook","orchard","parade","quartz","station","thunder","valley","zipper","canyon","diamond","festival","glacier","horizon","library"],
+  verb: ["build","catch","climb","dance","drift","explore","float","gather","glow","imagine","jump","listen","mix","open","paint","race","remember","roll","search","share","sketch","spin","travel","wander","whisper","write","zoom","balance","create","discover","bounce","carry","chase","collect","compare","crawl","design","dream","escape","fold","follow","giggle","grab","hide","hop","invent","launch","march","notice","pack","pour","reach","repair","sail","shake","slide","solve","splash","stretch","swing","trace","trade","unpack","visit","wave","wonder","arrange","breathe","celebrate","deliver","examine","forgive","glance","measure","protect","rescue","scatter","translate","uncover","welcome"],
+  adjective: ["bright","calm","clever","cozy","curious","gentle","golden","happy","hidden","icy","lucky","messy","quiet","rapid","round","shiny","silent","soft","strange","sunny","tiny","wild","witty","brave","crisp","dreamy","fresh","playful","simple","vivid","ancient","bouncy","cloudy","dusty","fancy","fuzzy","glossy","graceful","hungry","jolly","kind","lively","misty","narrow","polite","proud","rough","sleepy","smooth","spicy","stormy","striped","tasty","thirsty","twisted","warm","wooden","young","zany","bitter","careful","delicate","eager","fragile","giant","hollow","jagged","massive","modern","mysterious","ordinary","peaceful","powerful","remote","rusty","shallow","sparkling","steady","uneven"]
 };
 function initWord() {
-  const output = $("#randomWordResult");
-  const generate = () => {
-    const category = $("#wordCategory").value;
-    const count = Math.max(1, Math.min(12, Math.trunc(Number($("#wordCount").value)) || 1));
-    const pool = category === "all" ? [...randomWords.noun, ...randomWords.verb, ...randomWords.adjective] : randomWords[category];
-    output.textContent = shuffle(pool).slice(0, Math.min(count, pool.length)).join(" · ");
+  const output=$("#randomWordResult"),meta=$("#wordPoolMeta"),decks=new Map();
+  const poolFor=()=>{
+    const category=$("#wordCategory").value,length=$("#wordLength").value;
+    let pool=category==="all"?[...randomWords.noun,...randomWords.verb,...randomWords.adjective]:[...randomWords[category]];
+    if(length==="short")pool=pool.filter(w=>w.length<=5);
+    if(length==="medium")pool=pool.filter(w=>w.length>=6&&w.length<=8);
+    if(length==="long")pool=pool.filter(w=>w.length>=9);
+    return [...new Set(pool)];
   };
-  $("#generateWord").addEventListener("click", generate);
+  const key=()=>`${$("#wordCategory").value}|${$("#wordLength").value}`;
+  const getDeck=()=>{
+    const k=key(),pool=poolFor();let deck=decks.get(k);
+    if(!deck?.length){deck=shuffle(pool);decks.set(k,deck)}
+    return deck;
+  };
+  const updateMeta=()=>{
+    const pool=poolFor(),deck=decks.get(key());
+    meta.textContent=`${pool.length} words match · ${deck?.length??pool.length} left before repeats`;
+  };
+  const generate=()=>{
+    const pool=poolFor();if(!pool.length){output.textContent="No words match these filters";updateMeta();return}
+    const count=Math.min(Math.max(1,Math.min(20,Math.trunc(Number($("#wordCount").value))||1)),pool.length),picks=[];
+    while(picks.length<count)picks.push(getDeck().pop());
+    output.textContent=picks.join(" · ");updateMeta();
+  };
+  $("#generateWord").addEventListener("click",generate);
+  $("#copyWords").addEventListener("click",e=>copyText(output.textContent.replaceAll(" · ","\n"),e.currentTarget));
+  $("#resetWordDeck").addEventListener("click",()=>{decks.delete(key());generate()});
+  $("#wordCategory").addEventListener("change",generate);
+  $("#wordLength").addEventListener("change",generate);
   generate();
 }
 
 function initGroups() {
-  $("#makeGroups").addEventListener("click", () => {
-    const items = parseItems($("#groupItems").value);
-    const size = Math.max(1, Math.trunc(Number($("#groupSize").value)) || 2);
-    const container = $("#groupsResult");
-    if (items.length < 2) {
-      container.innerHTML = "<div class='team'><h3>Add at least two items</h3></div>";
-      return;
-    }
-    const shuffled = shuffle(items);
-    const groups = [];
-    for (let i = 0; i < shuffled.length; i += size) groups.push(shuffled.slice(i, i + size));
-    renderGroups(container, groups, "Group");
-  });
+  let latest=[];
+  const build=()=>{
+    const items=parseItems($("#groupItems").value),maxSize=Math.max(1,Math.trunc(Number($("#groupSize").value))||2),container=$("#groupsResult");
+    if(items.length<2){container.innerHTML="<div class='team'><h3>Add at least two items</h3></div>";latest=[];return}
+    const groupCount=Math.ceil(items.length/maxSize),shuffled=shuffle(items);
+    latest=Array.from({length:groupCount},()=>[]);
+    shuffled.forEach((item,index)=>latest[index%groupCount].push(item));
+    renderGroups(container,latest,"Group");
+    $("#groupSummary").textContent=`${items.length} items · ${latest.length} groups · sizes ${latest.map(g=>g.length).join(" / ")}`;
+    $("#reshuffleGroups").disabled=false;$("#copyGroups").disabled=false;
+  };
+  $("#makeGroups").addEventListener("click",build);
+  $("#reshuffleGroups").addEventListener("click",build);
+  $("#copyGroups").addEventListener("click",e=>latest.length&&copyText(groupsToText(latest,"Group"),e.currentTarget));
 }
 
 function initYesNo() {
-  const output = $("#yesNoResult");
-  const history = $("#yesNoHistory");
-  const answers = [];
-  $("#answerYesNo").addEventListener("click", () => {
-    const answer = Math.random() < 0.5 ? "Yes" : "No";
-    output.textContent = answer;
-    answers.unshift(answer);
-    answers.splice(5);
-    history.textContent = answers.length > 1 ? "Recent: " + answers.join(" · ") : "";
+  const output=$("#yesNoResult"),historyEl=$("#yesNoHistory"),label=$("#yesNoLabel"),answers=[];
+  const render=()=>{
+    const yes=answers.filter(a=>a==="Yes").length,no=answers.length-yes;
+    historyEl.textContent=answers.length?`Recent: ${answers.slice(0,8).join(" · ")} · Yes ${yes} / No ${no}`:"";
+  };
+  $("#answerYesNo").addEventListener("click",()=>{
+    const answer=randomFloat()<.5?"Yes":"No",question=$("#yesNoQuestion").value.trim();
+    label.textContent=question||"Answer";output.textContent=answer;answers.unshift(answer);answers.splice(20);render();
+    output.classList.remove("answer-pop");requestAnimationFrame(()=>output.classList.add("answer-pop"));
   });
+  $("#resetYesNo").addEventListener("click",()=>{answers.length=0;render();output.textContent="Ask, then tap";label.textContent="Answer"});
 }
-
 
 function addBottomToolTabs() {
   const topTabs = document.querySelector(".tool-tabs");

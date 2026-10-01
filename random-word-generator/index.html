@@ -32,16 +32,18 @@
     <section class="panel">
       <div class="row">
         <div><label for="wordCategory">Word type</label><select id="wordCategory"><option value="all">All words</option><option value="noun">Nouns</option><option value="verb">Verbs</option><option value="adjective">Adjectives</option></select></div>
-        <div><label for="wordCount">How many words?</label><input id="wordCount" type="number" min="1" max="12" value="3"></div>
+        <div><label for="wordLength">Word length</label><select id="wordLength"><option value="all">Any length</option><option value="short">Short · 2–5 letters</option><option value="medium">Medium · 6–8 letters</option><option value="long">Long · 9+ letters</option></select></div>
       </div>
-      <div class="actions"><button id="generateWord" class="btn">Generate words</button></div>
+      <div style="margin-top:12px"><label for="wordCount">How many words?</label><input id="wordCount" type="number" min="1" max="20" value="3"></div>
+      <div class="actions"><button id="generateWord" class="btn">Generate words</button><button id="copyWords" class="btn secondary" type="button">Copy words</button><button id="resetWordDeck" class="btn secondary" type="button">Reset used words</button></div>
+      <div id="wordPoolMeta" class="list-meta"></div>
       <div class="result compact-result"><div class="result-label">Random words</div><div id="randomWordResult" class="result-value">—</div></div>
     </section>
     <div class="ad-slot">Future ad space</div>
     <section class="info info-grid">
       <div class="info-card"><h2>Choose a word type</h2><p>Generate from all words at once or narrow the list to nouns, verbs or adjectives when you need a particular kind of prompt.</p></div>
       <div class="info-card"><h2>Useful for ideas and games</h2><p>Random words work well for creative writing, drawing prompts, improv games, vocabulary activities, naming sessions and brainstorming warmups.</p></div>
-      <div class="info-card"><h2>Generate up to 12</h2><p>Create a single word or a small batch. Each click reshuffles the built-in word pool and produces a new selection.</p></div>
+      <div class="info-card"><h2>Fresh words without repeats</h2><p>Choose up to 20 words at a time. The current filtered pool is shuffled like a deck, so words do not repeat until that pool has been used.</p></div>
     </section>
     <section class="network">
       <div class="network-label">More from <strong>Every Tiny Tool ✦</strong></div>

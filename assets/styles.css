@@ -148,6 +148,23 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
 .faq-list summary{cursor:pointer;padding:13px 0;font-weight:800}
 .faq-list p{margin:0;padding:0 0 14px;color:var(--muted)}
 
+
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.muted-inline{color:var(--muted);font-size:11px;font-weight:650}
+.list-meta{margin-top:11px;color:var(--muted);font-size:12px;font-weight:650}
+.option-strip{margin-top:12px;padding:11px 13px;border:1px solid #edf2f7;border-radius:13px;background:#fafcff}
+.option-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.color-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.color-value{display:grid;gap:2px;text-align:left;padding:11px 12px;border:1px solid #eeeeee;border-radius:13px;background:#fff;color:var(--ink)}
+.color-value span{color:var(--muted);font-size:10px;font-weight:850;letter-spacing:.06em}
+.color-value strong{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.color-value:hover{border-color:#9fcff7;background:var(--accent-soft)}
+.color-history{display:flex;flex-wrap:wrap;gap:8px;margin-top:7px}
+.color-chip{width:34px;height:34px;border:2px solid #fff;border-radius:10px;box-shadow:0 0 0 1px #dedede;transition:transform .15s ease}
+.color-chip:hover{transform:translateY(-2px)}
+.answer-pop{animation:answer-pop .32s ease}
+@keyframes answer-pop{50%{transform:scale(1.06)}}
+
 .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
 .btn {
   border: 0; border-radius: 14px; padding: 12px 17px; font-weight: 800;
@@ -312,7 +329,8 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
   }
   .hero { padding-top: 38px; }
   .tool-layout { padding-top: 28px; }
-  .row, .wheel-wrap, .teams, .info-grid, .home-info-grid { grid-template-columns: 1fr; }
+  .row, .wheel-wrap, .teams, .info-grid, .home-info-grid, .option-grid { grid-template-columns: 1fr; }
+  .color-values{grid-template-columns:1fr}
   .game-toolbar{align-items:stretch;flex-direction:column}
   .timer-card{justify-content:space-between}
   .timer-actions{width:100%}

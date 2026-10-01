@@ -31,11 +31,17 @@
     <div class="tool-head"><a class="breadcrumb" href="../">← All random tools</a><h1>Random Color Generator</h1><p>Generate a random HEX color for design, drawing, coding or whenever you need a color you didn't overthink.</p></div>
     <section class="panel">
       <div id="swatch" class="swatch"><span id="colorCode" class="swatch-code">#000000</span></div>
-      <div class="actions"><button id="generate" class="btn">Generate color</button><button id="copy" class="btn secondary">Copy HEX</button></div>
+      <div class="color-values">
+        <button class="color-value" id="copyHex" type="button"><span>HEX</span><strong id="hexValue">#000000</strong></button>
+        <button class="color-value" id="copyRgb" type="button"><span>RGB</span><strong id="rgbValue">rgb(0, 0, 0)</strong></button>
+        <button class="color-value" id="copyHsl" type="button"><span>HSL</span><strong id="hslValue">hsl(0, 0%, 0%)</strong></button>
+      </div>
+      <div class="actions"><button id="generate" class="btn">Generate color</button><button id="copy" class="btn secondary" type="button">Copy HEX</button></div>
+      <div><div class="list-meta">Recent colors</div><div id="colorHistory" class="color-history"></div></div>
     </section>
     <div class="ad-slot">Future ad space</div>
     <section class="info info-grid">
-      <div class="info-card"><h2>How to use it</h2><p>Click Generate color for a new six-digit HEX value, then copy it into CSS, a design file, a drawing app or anywhere else that accepts HEX colors.</p></div>
+      <div class="info-card"><h2>HEX, RGB and HSL</h2><p>Generate a color once and copy it as HEX, RGB or HSL. Recent swatches stay visible so you can compare a few random options before choosing.</p></div>
       <div class="info-card"><h2>Good for quick inspiration</h2><p>Use random colors for palette warmups, placeholder UI states, drawing prompts, game pieces or whenever choosing a color is slowing you down.</p></div>
       <div class="info-card"><h2>Private by default</h2><p>The color is generated locally in your browser. Nothing needs to be uploaded, saved or tied to an account.</p></div>
     </section>

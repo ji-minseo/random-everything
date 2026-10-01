@@ -34,12 +34,13 @@
         <div><label for="groupItems">Names or items</label><textarea id="groupItems" placeholder="Alex&#10;Sam&#10;Taylor&#10;Jordan&#10;Casey&#10;Riley"></textarea></div>
         <div><label for="groupSize">People per group</label><input id="groupSize" type="number" min="1" value="2"><p class="note">The final group may be smaller when the list does not divide evenly.</p></div>
       </div>
-      <div class="actions"><button id="makeGroups" class="btn">Make groups</button></div>
+      <div class="actions"><button id="makeGroups" class="btn">Make groups</button><button id="reshuffleGroups" class="btn secondary" type="button" disabled>Reshuffle</button><button id="copyGroups" class="btn secondary" type="button" disabled>Copy groups</button></div>
+      <div id="groupSummary" class="list-meta"></div>
       <div id="groupsResult" class="teams"></div>
     </section>
     <div class="ad-slot">Future ad space</div>
     <section class="info info-grid">
-      <div class="info-card"><h2>Random group shuffler</h2><p>Paste a list of names or items, choose the size of each group and shuffle the list into fresh random groups whenever you need them.</p></div>
+      <div class="info-card"><h2>Balanced group shuffler</h2><p>Choose the maximum size you want. The tool creates enough groups and distributes items as evenly as possible so you do not end up with one tiny leftover group.</p></div>
       <div class="info-card"><h2>Different from team count</h2><p>If you know the number of teams instead, use the Team Generator. Here you control the size of each group rather than the total number of groups.</p></div>
       <div class="info-card"><h2>Good for classes and activities</h2><p>Use it for breakout sessions, table assignments, workshops, study groups, games or any activity that needs quick random grouping.</p></div>
     </section>
