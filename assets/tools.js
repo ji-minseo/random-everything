@@ -507,25 +507,48 @@ function initPictionary() {
 }
 
 function initNumber() {
-  const output=$("#numberResult");
+  const output=$("#numberResult"),historyEl=$("#numberHistory"),history=[];
+  let current=[];
+  const renderHistory=()=>{
+    historyEl.innerHTML=history.map((set,i)=>`<button type="button" class="history-row" data-history="${i}">${escapeHtml(set.join(", "))}</button>`).join("");
+    historyEl.querySelectorAll("[data-history]").forEach(btn=>btn.addEventListener("click",()=>copyText(history[Number(btn.dataset.history)].join(", "),btn)));
+  };
   const generate=()=>{
-    let min=Math.trunc(Number($("#minNumber").value)),max=Math.trunc(Number($("#maxNumber").value));
-    let count=Math.max(1,Math.min(100,Math.trunc(Number($("#numberCount").value))||1));
+    let min=Number($("#minNumber").value),max=Number($("#maxNumber").value);
+    let count=Math.max(1,Math.min(1000,Math.trunc(Number($("#numberCount").value))||1));
+    const decimals=Math.max(0,Math.min(6,Number($("#decimalPlaces").value)||0)),scale=10**decimals;
     if(!Number.isFinite(min)||!Number.isFinite(max)){output.textContent="Enter valid numbers";return}
     if(min>max)[min,max]=[max,min];
-    let nums=[];
+    const minI=Math.ceil(min*scale),maxI=Math.floor(max*scale);
+    if(minI>maxI){output.textContent="Range is too small for that precision";return}
+    let ints=[];
     if($("#uniqueNumbers").checked){
-      const range=max-min+1;
-      if(range<=0||range>1000000){output.textContent="Use a smaller range for unique numbers";return}
+      const range=maxI-minI+1;
+      if(range>1000000){output.textContent="Use a smaller range for unique values";return}
       count=Math.min(count,range);
-      const pool=Array.from({length:range},(_,i)=>min+i);
-      nums=shuffle(pool).slice(0,count);
-    }else nums=Array.from({length:count},()=>randomInt(min,max));
-    if($("#sortNumbers").checked)nums.sort((a,b)=>a-b);
-    output.textContent=nums.join(", ");
+      const pool=Array.from({length:range},(_,i)=>minI+i);
+      ints=shuffle(pool).slice(0,count);
+    }else{
+      ints=Array.from({length:count},()=>randomInt(minI,maxI));
+    }
+    current=ints.map(v=>v/scale);
+    if($("#sortNumbers").checked)current.sort((a,b)=>a-b);
+    const shown=current.map(v=>decimals?v.toFixed(decimals):String(v));
+    output.textContent=shown.join(", ");
+    history.unshift(shown);history.splice(5);renderHistory();
   };
   $("#generateNumber").addEventListener("click",generate);
-  $("#copyNumbers").addEventListener("click",e=>copyText(output.textContent,e.currentTarget));
+  $("#lottoPreset").addEventListener("click",()=>{
+    $("#minNumber").value=1;$("#maxNumber").value=45;$("#numberCount").value=6;$("#decimalPlaces").value=0;
+    $("#uniqueNumbers").checked=true;$("#sortNumbers").checked=true;generate();
+  });
+  $("#copyNumbers").addEventListener("click",ev=>copyText(output.textContent,ev.currentTarget));
+  $("#downloadNumbers").addEventListener("click",()=>{
+    if(!current.length)return;
+    const blob=new Blob([output.textContent+"\n"],{type:"text/plain;charset=utf-8"});
+    const url=URL.createObjectURL(blob),a=document.createElement("a");
+    a.href=url;a.download="random-numbers.txt";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  });
   generate();
 }
 

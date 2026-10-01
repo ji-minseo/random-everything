@@ -34,16 +34,17 @@
         <div><label for="minNumber">Minimum</label><input id="minNumber" type="number" value="1"></div>
         <div><label for="maxNumber">Maximum</label><input id="maxNumber" type="number" value="100"></div>
       </div>
-      <div style="margin-top:12px"><label for="numberCount">How many numbers?</label><input id="numberCount" type="number" min="1" max="100" value="1"></div>
+      <div class="row" style="margin-top:12px"><div><label for="numberCount">How many numbers?</label><input id="numberCount" type="number" min="1" max="1000" value="1"></div><div><label for="decimalPlaces">Decimal places</label><select id="decimalPlaces"><option value="0" selected>0 · whole numbers</option><option value="1">1 decimal</option><option value="2">2 decimals</option><option value="3">3 decimals</option><option value="4">4 decimals</option><option value="5">5 decimals</option><option value="6">6 decimals</option></select></div></div>
       <div class="option-grid"><label class="checkline option-strip"><input id="uniqueNumbers" type="checkbox"> No duplicate numbers</label><label class="checkline option-strip"><input id="sortNumbers" type="checkbox"> Sort results smallest to largest</label></div>
-      <div class="actions"><button id="generateNumber" class="btn">Generate number</button><button id="copyNumbers" class="btn secondary" type="button">Copy results</button></div>
+      <div class="actions"><button id="generateNumber" class="btn">Generate numbers</button><button id="lottoPreset" class="btn secondary" type="button">6 numbers from 1–45</button><button id="copyNumbers" class="btn secondary" type="button">Copy results</button><button id="downloadNumbers" class="btn secondary" type="button">Download TXT</button></div>
       <div class="result compact-result"><div class="result-label">Random result</div><div id="numberResult" class="result-value">—</div></div>
+      <div><div class="list-meta">Recent sets</div><div id="numberHistory" class="history-list"></div></div>
     </section>
     <div class="ad-slot">Future ad space</div>
     <section class="info info-grid">
-      <div class="info-card"><h2>Choose any range</h2><p>Set the smallest and largest whole number you want. If you enter them backwards, the tool automatically uses the lower value as the minimum.</p></div>
+      <div class="info-card"><h2>Integers or decimals</h2><p>Set any numeric range and choose from zero to six decimal places. Generate one value or a large batch from the same range.</p></div>
       <div class="info-card"><h2>Unique or repeatable numbers</h2><p>Create up to 100 integers at once. Turn on No duplicate numbers for drawings, raffles or selections where each number should appear only once.</p></div>
-      <div class="info-card"><h2>Simple browser-based randomizer</h2><p>Results are generated instantly on the page. No account, spreadsheet or server request is needed.</p></div>
+      <div class="info-card"><h2>Preset, history and export</h2><p>Use the 1–45 six-number preset, revisit recent sets on the page, or copy and download the current result as text.</p></div>
     </section>
     <section class="network">
       <div class="network-label">More from <strong>Every Tiny Tool ✦</strong></div>
