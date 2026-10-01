@@ -630,17 +630,34 @@ function initGroups() {
 }
 
 function initYesNo() {
-  const output=$("#yesNoResult"),historyEl=$("#yesNoHistory"),label=$("#yesNoLabel"),answers=[];
+  const output=$("#yesNoResult"),historyEl=$("#yesNoHistory"),label=$("#yesNoLabel"),coin=$("#yesNoCoin"),answers=[];
+  let flipping=false;
   const render=()=>{
     const yes=answers.filter(a=>a==="Yes").length,no=answers.length-yes;
     historyEl.textContent=answers.length?`Recent: ${answers.slice(0,8).join(" · ")} · Yes ${yes} / No ${no}`:"";
   };
+  const beep=()=>{
+    if(!$("#yesNoSound").checked)return;
+    try{
+      const Ctx=window.AudioContext||window.webkitAudioContext,ctx=new Ctx(),osc=ctx.createOscillator(),gain=ctx.createGain();
+      osc.frequency.value=540;gain.gain.value=.045;osc.connect(gain);gain.connect(ctx.destination);osc.start();
+      gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.16);osc.stop(ctx.currentTime+.16);osc.onended=()=>ctx.close();
+    }catch{}
+  };
   $("#answerYesNo").addEventListener("click",()=>{
+    if(flipping)return;flipping=true;$("#answerYesNo").disabled=true;
     const answer=randomFloat()<.5?"Yes":"No",question=$("#yesNoQuestion").value.trim();
-    label.textContent=question||"Answer";output.textContent=answer;answers.unshift(answer);answers.splice(20);render();
-    output.classList.remove("answer-pop");requestAnimationFrame(()=>output.classList.add("answer-pop"));
+    coin.classList.remove("flip-yes","flip-no");void coin.offsetWidth;coin.classList.add(answer==="Yes"?"flip-yes":"flip-no");
+    output.textContent="Flipping…";label.textContent=question||"Answer";
+    setTimeout(()=>{
+      output.textContent=answer;answers.unshift(answer);answers.splice(20);render();beep();
+      output.classList.remove("answer-pop");requestAnimationFrame(()=>output.classList.add("answer-pop"));
+      $("#answerYesNo").textContent="Flip again";$("#answerYesNo").disabled=false;flipping=false;
+    },760);
   });
-  $("#resetYesNo").addEventListener("click",()=>{answers.length=0;render();output.textContent="Ask, then tap";label.textContent="Answer"});
+  $("#resetYesNo").addEventListener("click",()=>{
+    answers.length=0;render();output.textContent="Ask, then tap";label.textContent="Answer";$("#answerYesNo").textContent="Flip for an answer";
+  });
 }
 
 function addBottomToolTabs() {

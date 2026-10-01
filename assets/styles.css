@@ -191,6 +191,18 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
 .history-row{padding:9px 11px;border:1px solid #eee;border-radius:11px;background:#fff;color:#333;text-align:left;font-size:12px;overflow-wrap:anywhere}
 .history-row:hover{border-color:#9fcff7;background:var(--accent-soft)}
 
+
+.compact-option{margin-top:0}
+.yesno-stage{display:grid;place-items:center;min-height:170px;margin-bottom:12px;perspective:800px}
+.yesno-coin{position:relative;width:116px;height:116px;transform-style:preserve-3d}
+.yesno-coin span{position:absolute;inset:0;display:grid;place-items:center;border-radius:50%;backface-visibility:hidden;border:8px solid #fff;outline:1px solid #d8e8f8;box-shadow:var(--shadow);font-size:20px;font-weight:900}
+.yesno-coin span:first-child{background:#dff3e8;color:#126b4c}
+.yesno-coin span:last-child{background:#ffe7ef;color:#9b3155;transform:rotateY(180deg)}
+.yesno-coin.flip-yes{animation:coin-yes .75s cubic-bezier(.2,.75,.2,1)}
+.yesno-coin.flip-no{animation:coin-no .75s cubic-bezier(.2,.75,.2,1) forwards}
+@keyframes coin-yes{to{transform:rotateY(1080deg)}}
+@keyframes coin-no{to{transform:rotateY(1260deg)}}
+
 .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
 .btn {
   border: 0; border-radius: 14px; padding: 12px 17px; font-weight: 800;
