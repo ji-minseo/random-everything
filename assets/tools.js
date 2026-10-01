@@ -135,28 +135,32 @@ function initChoice() {
   const syncCount=()=>{
     const n=parseItems(input.value).length;
     countEl.textContent=`${n} choice${n===1?"":"s"}`;
-    pickCount.max=String(Math.max(1,Math.min(20,n||20)));
-    if(Number(pickCount.value)>Number(pickCount.max))pickCount.value=pickCount.max;
-    $("#spinChoices").disabled=n<2;
+    $("#spinChoices").disabled=n<2;$("#randomOrder").disabled=n<2;
+    pickCount.max=Math.max(1,n);if(Number(pickCount.value)>n&&n)pickCount.value=n;
   };
   const renderHistory=()=>historyEl.textContent=history.length>1?"Recent: "+history.join(" · "):"";
+  const showPicks=picks=>{
+    output.textContent=picks.join(" → ");
+    history.unshift(picks.join(" → "));history.splice(5);renderHistory();
+  };
   $("#pick").addEventListener("click",()=>{
     const items=parseItems(input.value);
     if(!items.length){output.textContent="Add at least one choice";return}
-    const count=Math.max(1,Math.min(Number(pickCount.value)||1,items.length,20));
-    const picks=shuffle(items).slice(0,count);
-    output.innerHTML=count===1?escapeHtml(picks[0]):`<div class="choice-stack">${picks.map((p,i)=>`<div><span>${i+1}</span>${escapeHtml(p)}</div>`).join("")}</div>`;
-    history.unshift(count===1?picks[0]:picks.join(" → "));history.splice(5);renderHistory();
+    const count=Math.min(items.length,Math.max(1,Math.trunc(Number(pickCount.value))||1));
+    const picks=shuffle(items).slice(0,count);showPicks(picks);
     if($("#removePicked").checked){
-      const remaining=[...items];
-      picks.forEach(p=>{const i=remaining.indexOf(p);if(i>=0)remaining.splice(i,1)});
-      input.value=remaining.join("\n");syncCount();
+      const remove=new Set(picks);input.value=items.filter(item=>!remove.has(item)).join("\n");syncCount();
     }
   });
-  $("#example").addEventListener("click",()=>{input.value="Pizza\nTacos\nPasta\nSushi";syncCount()});
-  $("#copyChoice").addEventListener("click",ev=>copyText(output.innerText.replaceAll("\n"," → "),ev.currentTarget));
+  $("#randomOrder").addEventListener("click",()=>{
+    const items=parseItems(input.value);
+    if(!items.length){output.textContent="Add at least one choice";return}
+    showPicks(shuffle(items));
+  });
+  $("#example").addEventListener("click",()=>{input.value="Pizza\nTacos\nPasta\nSushi";pickCount.value=1;syncCount()});
+  $("#copyChoice").addEventListener("click",ev=>copyText(output.textContent.replaceAll(" → ","\n"),ev.currentTarget));
   $("#spinChoices").addEventListener("click",()=>{const items=parseItems(input.value);if(items.length>=2)location.href=wheelLink(items)});
-  input.addEventListener("input",syncCount);pickCount.addEventListener("input",syncCount);syncCount();
+  input.addEventListener("input",syncCount);syncCount();
 }
 
 function colorsFor(count) {
@@ -177,6 +181,8 @@ function initWheel() {
   const shareStatus = $("#wheelShareStatus");
   let rotation = 0;
   let spinning = false;
+  const winners = [];
+  const renderWinnerHistory=()=>$("#wheelHistory").textContent=winners.length>1?"Recent: "+winners.join(" · "):"";
   const history = [];
   const storageKey = "randomEverythingWheel";
 
@@ -276,6 +282,8 @@ function initWheel() {
   soundToggle.addEventListener("change", saveStored);
 
   $("#copyWheelResult").addEventListener("click",e=>copyText(output.textContent,e.currentTarget));
+
+  $("#copyWheelWinner").addEventListener("click",e=>copyText(output.textContent,e.currentTarget));
 
   $("#shareWheel").addEventListener("click", async e => {
     const items = parseItems(input.value);
@@ -659,10 +667,11 @@ function initGroups() {
 
 function initYesNo() {
   const output=$("#yesNoResult"),historyEl=$("#yesNoHistory"),label=$("#yesNoLabel"),coin=$("#yesNoCoin"),answers=[];
+  const front=coin.querySelector("span:first-child"),back=coin.querySelector("span:last-child");
   let flipping=false;
   const render=()=>{
     const yes=answers.filter(a=>a==="Yes").length,no=answers.filter(a=>a==="No").length,maybe=answers.filter(a=>a==="Maybe").length;
-    historyEl.textContent=answers.length?`Recent: ${answers.slice(0,8).join(" · ")} · Yes ${yes} / No ${no}${maybe?" / Maybe "+maybe:""}`:"";
+    historyEl.textContent=answers.length?`Recent: ${answers.slice(0,8).join(" · ")} · Yes ${yes} / No ${no}${$("#includeMaybe").checked?` / Maybe ${maybe}`:""}`:"";
   };
   const beep=()=>{
     if(!$("#yesNoSound").checked)return;
@@ -674,12 +683,12 @@ function initYesNo() {
   };
   $("#answerYesNo").addEventListener("click",()=>{
     if(flipping)return;flipping=true;$("#answerYesNo").disabled=true;
-    const pool=$("#yesNoMaybe").checked?["Yes","No","Maybe"]:["Yes","No"];
-    const answer=sample(pool),question=$("#yesNoQuestion").value.trim();
-    const faces=coin.querySelectorAll("span");
-    faces[0].textContent=answer==="Maybe"?"MAYBE":"YES";faces[1].textContent=answer==="Maybe"?"MAYBE":"NO";
-    coin.classList.remove("flip-yes","flip-no");void coin.offsetWidth;
-    coin.classList.add(answer==="No"?"flip-no":"flip-yes");
+    const options=$("#includeMaybe").checked?["Yes","No","Maybe"]:["Yes","No"];
+    const answer=sample(options),question=$("#yesNoQuestion").value.trim();
+    front.textContent=answer==="Maybe"?"MAYBE":"YES";back.textContent="NO";
+    coin.classList.toggle("maybe-face",answer==="Maybe");
+    coin.classList.remove("flip-yes","flip-no","flip-maybe");void coin.offsetWidth;
+    coin.classList.add(answer==="No"?"flip-no":answer==="Maybe"?"flip-maybe":"flip-yes");
     output.textContent="Flipping…";label.textContent=question||"Answer";
     setTimeout(()=>{
       output.textContent=answer;answers.unshift(answer);answers.splice(20);render();beep();
@@ -687,10 +696,9 @@ function initYesNo() {
       $("#answerYesNo").textContent="Flip again";$("#answerYesNo").disabled=false;flipping=false;
     },760);
   });
-  $("#copyYesNo").addEventListener("click",ev=>copyText(output.textContent,ev.currentTarget));
+  $("#includeMaybe").addEventListener("change",render);
   $("#resetYesNo").addEventListener("click",()=>{
     answers.length=0;render();output.textContent="Ask, then tap";label.textContent="Answer";$("#answerYesNo").textContent="Flip for an answer";
-    const faces=coin.querySelectorAll("span");faces[0].textContent="YES";faces[1].textContent="NO";
   });
 }
 
