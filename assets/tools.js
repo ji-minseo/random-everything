@@ -683,39 +683,51 @@ function initGroups() {
 
 function initYesNo() {
   const output=$("#yesNoResult"),historyEl=$("#yesNoHistory"),label=$("#yesNoLabel"),coin=$("#yesNoCoin"),answers=[];
-  const front=coin.querySelector("span:first-child"),back=coin.querySelector("span:last-child");
-  let flipping=false;
+  let flipping=false,lastAnswer="";
   const render=()=>{
-    const yes=answers.filter(a=>a==="Yes").length,no=answers.filter(a=>a==="No").length,maybe=answers.filter(a=>a==="Maybe").length;
-    historyEl.textContent=answers.length?`Recent: ${answers.slice(0,8).join(" · ")} · Yes ${yes} / No ${no}${$("#includeMaybe").checked?` / Maybe ${maybe}`:""}`:"";
+    const yes=answers.filter(a=>a==="Yes").length;
+    const no=answers.filter(a=>a==="No").length;
+    const maybe=answers.filter(a=>a==="Maybe").length;
+    const tally=$("#yesNoMaybe").checked?`Yes ${yes} / No ${no} / Maybe ${maybe}`:`Yes ${yes} / No ${no}`;
+    historyEl.textContent=answers.length?`Recent: ${answers.slice(0,8).join(" · ")} · ${tally}`:"";
   };
   const beep=()=>{
     if(!$("#yesNoSound").checked)return;
     try{
       const Ctx=window.AudioContext||window.webkitAudioContext,ctx=new Ctx(),osc=ctx.createOscillator(),gain=ctx.createGain();
-      osc.frequency.value=540;gain.gain.value=.045;osc.connect(gain);gain.connect(ctx.destination);osc.start();
+      osc.frequency.value=lastAnswer==="Maybe"?420:540;gain.gain.value=.045;osc.connect(gain);gain.connect(ctx.destination);osc.start();
       gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.16);osc.stop(ctx.currentTime+.16);osc.onended=()=>ctx.close();
     }catch{}
   };
+  const resetCoin=()=>{
+    const faces=coin.querySelectorAll("span");
+    if(faces[0])faces[0].textContent="YES";
+    if(faces[1])faces[1].textContent="NO";
+    coin.classList.remove("maybe-result");
+  };
   $("#answerYesNo").addEventListener("click",()=>{
-    if(flipping)return;flipping=true;$("#answerYesNo").disabled=true;
-    const options=$("#includeMaybe").checked?["Yes","No","Maybe"]:["Yes","No"];
+    if(flipping)return;
+    flipping=true;$("#answerYesNo").disabled=true;resetCoin();
+    const options=$("#yesNoMaybe").checked?["Yes","No","Maybe"]:["Yes","No"];
     const answer=sample(options),question=$("#yesNoQuestion").value.trim();
-    front.textContent=answer==="Maybe"?"MAYBE":"YES";back.textContent="NO";
-    coin.classList.toggle("maybe-face",answer==="Maybe");
     coin.classList.remove("flip-yes","flip-no","flip-maybe");void coin.offsetWidth;
-    coin.classList.add(answer==="No"?"flip-no":answer==="Maybe"?"flip-maybe":"flip-yes");
-    output.textContent="Flipping…";label.textContent=question||"Answer";
+    coin.classList.add(answer==="Yes"?"flip-yes":answer==="No"?"flip-no":"flip-maybe");
+    output.textContent="Deciding…";label.textContent=question||"Answer";
     setTimeout(()=>{
+      lastAnswer=answer;
+      if(answer==="Maybe"){coin.querySelectorAll("span").forEach(face=>face.textContent="MAYBE");coin.classList.add("maybe-result")}
       output.textContent=answer;answers.unshift(answer);answers.splice(20);render();beep();
       output.classList.remove("answer-pop");requestAnimationFrame(()=>output.classList.add("answer-pop"));
-      $("#answerYesNo").textContent="Flip again";$("#answerYesNo").disabled=false;flipping=false;
+      $("#answerYesNo").textContent="Again";$("#answerYesNo").disabled=false;flipping=false;
     },760);
   });
-  $("#includeMaybe").addEventListener("change",render);
-  $("#copyYesNo").addEventListener("click",ev=>copyText(output.textContent,ev.currentTarget));
+  $("#copyYesNo").addEventListener("click",ev=>{
+    const question=$("#yesNoQuestion").value.trim();
+    copyText(question&&lastAnswer?`${question} — ${lastAnswer}`:(lastAnswer||output.textContent),ev.currentTarget);
+  });
+  $("#yesNoMaybe").addEventListener("change",render);
   $("#resetYesNo").addEventListener("click",()=>{
-    answers.length=0;render();output.textContent="Ask, then tap";label.textContent="Answer";$("#answerYesNo").textContent="Flip for an answer";
+    answers.length=0;lastAnswer="";render();output.textContent="Ask, then tap";label.textContent="Answer";$("#answerYesNo").textContent="Flip for an answer";resetCoin();
   });
 }
 

@@ -202,6 +202,9 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
 .yesno-coin.flip-no{animation:coin-no .75s cubic-bezier(.2,.75,.2,1) forwards}
 @keyframes coin-yes{to{transform:rotateY(1080deg)}}
 @keyframes coin-no{to{transform:rotateY(1260deg)}}
+.yesno-coin.flip-maybe{animation:coin-maybe .75s cubic-bezier(.2,.75,.2,1)}
+.yesno-coin.maybe-result span{background:#fff3bf;color:#705500}
+@keyframes coin-maybe{to{transform:rotateY(1170deg) rotateX(360deg)}}
 
 
 .choice-controls{align-items:end;margin-top:8px}
