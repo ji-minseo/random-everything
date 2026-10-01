@@ -9,7 +9,7 @@ function randomFloat() {
     crypto.getRandomValues(a);
     return a[0] / 4294967296;
   }
-  return randomFloat();
+  return (Math.random)();
 }
 function sample(arr) {
   return arr[Math.floor(randomFloat() * arr.length)];
