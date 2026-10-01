@@ -48,15 +48,56 @@ function escapeHtml(str) {
 }
 
 function initColor() {
-  const swatch = $("#swatch"), code = $("#colorCode"), history = [];
-  const hexToRgb = hex => {
-    const n=parseInt(hex.slice(1),16);return {r:(n>>16)&255,g:(n>>8)&255,b:n&255};
-  };
-  const rgbToHsl = ({r,g,b}) => {
+  const paletteEl=$("#palette"),history=[],colors=Array(5).fill("#000000"),locked=Array(5).fill(false);
+  let selected=0;
+  const hexToRgb=hex=>{const n=parseInt(hex.slice(1),16);return {r:(n>>16)&255,g:(n>>8)&255,b:n&255}};
+  const rgbToHsl=({r,g,b})=>{
     r/=255;g/=255;b/=255;const max=Math.max(r,g,b),min=Math.min(r,g,b);let h=0,s=0,l=(max+min)/2;
     if(max!==min){const d=max-min;s=l>.5?d/(2-max-min):d/(max+min);
       switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;default:h=(r-g)/d+4}h/=6}
     return {h:Math.round(h*360),s:Math.round(s*100),l:Math.round(l*100)};
+  };
+  const lum=hex=>{
+    const {r,g,b}=hexToRgb(hex),f=v=>{v/=255;return v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4)};
+    return .2126*f(r)+.7152*f(g)+.0722*f(b);
+  };
+  const contrast=(a,b)=>{const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+  const readable=hex=>lum(hex)>.38?"#111":"#fff";
+  const randomHex=()=>"#"+randomInt(0,0xFFFFFF).toString(16).padStart(6,"0").toUpperCase();
+
+  const syncSelected=()=>{
+    const hex=colors[selected],rgb=hexToRgb(hex),hsl=rgbToHsl(rgb);
+    $("#hexValue").textContent=hex;
+    $("#rgbValue").textContent=`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+    $("#hslValue").textContent=`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+  };
+  const updateContrast=()=>{
+    const fg=colors[Number($("#contrastText").value)||0],bg=colors[Number($("#contrastBg").value)||1],r=contrast(fg,bg);
+    $("#contrastRatio").textContent=`${r.toFixed(2)}:1`;
+    $("#contrastStatus").textContent=r>=7?"AAA · excellent":r>=4.5?"AA · passes normal text":r>=3?"AA large text only":"Low contrast";
+    const p=$("#contrastPreview");p.style.color=fg;p.style.background=bg;
+  };
+  const syncContrastOptions=()=>{
+    for(const id of ["#contrastText","#contrastBg"]){
+      const select=$(id),old=select.value;
+      select.innerHTML=colors.map((hex,i)=>`<option value="${i}">Color ${i+1} · ${hex}</option>`).join("");
+      select.value=old|| (id==="#contrastText"?"0":"1");
+    }
+    if($("#contrastText").value===$("#contrastBg").value)$("#contrastBg").value=$("#contrastText").value==="0"?"1":"0";
+    updateContrast();
+  };
+  const renderPalette=()=>{
+    paletteEl.innerHTML="";
+    colors.forEach((hex,i)=>{
+      const card=document.createElement("div");card.className="palette-swatch"+(selected===i?" selected":"");card.style.background=hex;card.style.color=readable(hex);
+      const lock=document.createElement("button");lock.type="button";lock.className="palette-lock";lock.textContent=locked[i]?"🔒":"🔓";
+      lock.addEventListener("click",ev=>{ev.stopPropagation();locked[i]=!locked[i];renderPalette()});
+      const value=document.createElement("button");value.type="button";value.className="palette-hex";value.textContent=hex;
+      card.addEventListener("click",()=>{selected=i;syncSelected();renderPalette()});
+      value.addEventListener("click",ev=>{ev.stopPropagation();selected=i;syncSelected();renderPalette()});
+      card.append(lock,value);paletteEl.appendChild(card);
+    });
+    syncSelected();syncContrastOptions();
   };
   const renderHistory=()=>{
     const box=$("#colorHistory");box.innerHTML="";
@@ -65,20 +106,26 @@ function initColor() {
       b.addEventListener("click",()=>copyText(hex,b));box.appendChild(b);
     });
   };
-  const generate = () => {
-    const color = "#" + randomInt(0,0xFFFFFF).toString(16).padStart(6,"0").toUpperCase();
-    const rgb=hexToRgb(color),hsl=rgbToHsl(rgb);
-    swatch.style.background=color;code.textContent=color;
-    $("#hexValue").textContent=color;
-    $("#rgbValue").textContent=`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
-    $("#hslValue").textContent=`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
-    history.unshift(color);history.splice(8);renderHistory();
+  const generate=()=>{
+    colors.forEach((_,i)=>{if(!locked[i])colors[i]=randomHex()});
+    colors.filter((_,i)=>!locked[i]).forEach(hex=>history.unshift(hex));
+    history.splice(12);renderHistory();renderPalette();
   };
   $("#generate").addEventListener("click",generate);
-  $("#copy").addEventListener("click",e=>copyText($("#hexValue").textContent,e.currentTarget));
-  $("#copyHex").addEventListener("click",e=>copyText($("#hexValue").textContent,e.currentTarget));
-  $("#copyRgb").addEventListener("click",e=>copyText($("#rgbValue").textContent,e.currentTarget));
-  $("#copyHsl").addEventListener("click",e=>copyText($("#hslValue").textContent,e.currentTarget));
+  document.addEventListener("keydown",ev=>{
+    const tag=document.activeElement?.tagName;
+    if(ev.code==="Space"&&!["INPUT","TEXTAREA","SELECT","BUTTON"].includes(tag)){ev.preventDefault();generate()}
+  });
+  $("#copy").addEventListener("click",ev=>copyText(colors[selected],ev.currentTarget));
+  $("#copyHex").addEventListener("click",ev=>copyText($("#hexValue").textContent,ev.currentTarget));
+  $("#copyRgb").addEventListener("click",ev=>copyText($("#rgbValue").textContent,ev.currentTarget));
+  $("#copyHsl").addEventListener("click",ev=>copyText($("#hslValue").textContent,ev.currentTarget));
+  $("#copyPaletteCss").addEventListener("click",ev=>{
+    const cssText=":root {\n"+colors.map((hex,i)=>`  --color-${i+1}: ${hex};`).join("\n")+"\n}";
+    copyText(cssText,ev.currentTarget);
+  });
+  $("#contrastText").addEventListener("change",updateContrast);
+  $("#contrastBg").addEventListener("change",updateContrast);
   generate();
 }
 

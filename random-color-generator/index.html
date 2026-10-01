@@ -30,20 +30,26 @@
   <main class="tool-layout">
     <div class="tool-head"><a class="breadcrumb" href="../">← All random tools</a><h1>Random Color Generator</h1><p>Generate a random HEX color for design, drawing, coding or whenever you need a color you didn't overthink.</p></div>
     <section class="panel">
-      <div id="swatch" class="swatch"><span id="colorCode" class="swatch-code">#000000</span></div>
+      <div class="palette-toolbar"><span class="list-meta">Press Space to generate · lock colors you want to keep</span><button id="copyPaletteCss" class="btn secondary" type="button">Copy CSS variables</button></div>
+      <div id="palette" class="palette" aria-label="Random color palette"></div>
       <div class="color-values">
-        <button class="color-value" id="copyHex" type="button"><span>HEX</span><strong id="hexValue">#000000</strong></button>
+        <button class="color-value" id="copyHex" type="button"><span>Selected HEX</span><strong id="hexValue">#000000</strong></button>
         <button class="color-value" id="copyRgb" type="button"><span>RGB</span><strong id="rgbValue">rgb(0, 0, 0)</strong></button>
         <button class="color-value" id="copyHsl" type="button"><span>HSL</span><strong id="hslValue">hsl(0, 0%, 0%)</strong></button>
       </div>
-      <div class="actions"><button id="generate" class="btn">Generate color</button><button id="copy" class="btn secondary" type="button">Copy HEX</button></div>
+      <div class="actions"><button id="generate" class="btn">Generate unlocked colors</button><button id="copy" class="btn secondary" type="button">Copy selected HEX</button></div>
+      <div class="contrast-card">
+        <div class="contrast-head"><div><span class="timer-label">Contrast checker</span><strong id="contrastRatio">—</strong></div><span id="contrastStatus" class="contrast-status">Choose two palette colors</span></div>
+        <div class="row"><div><label for="contrastText">Text color</label><select id="contrastText"></select></div><div><label for="contrastBg">Background color</label><select id="contrastBg"></select></div></div>
+        <div id="contrastPreview" class="contrast-preview">Sample text Aa</div>
+      </div>
       <div><div class="list-meta">Recent colors</div><div id="colorHistory" class="color-history"></div></div>
     </section>
     <div class="ad-slot">Future ad space</div>
     <section class="info info-grid">
-      <div class="info-card"><h2>HEX, RGB and HSL</h2><p>Generate a color once and copy it as HEX, RGB or HSL. Recent swatches stay visible so you can compare a few random options before choosing.</p></div>
-      <div class="info-card"><h2>Good for quick inspiration</h2><p>Use random colors for palette warmups, placeholder UI states, drawing prompts, game pieces or whenever choosing a color is slowing you down.</p></div>
-      <div class="info-card"><h2>Private by default</h2><p>The color is generated locally in your browser. Nothing needs to be uploaded, saved or tied to an account.</p></div>
+      <div class="info-card"><h2>Generate a five-color palette</h2><p>Press Space or the generate button for five colors at once. Lock any swatch you want to keep while the other colors continue changing.</p></div>
+      <div class="info-card"><h2>HEX, RGB, HSL and CSS</h2><p>Select any swatch to copy its values, or copy the full palette as reusable CSS custom properties.</p></div>
+      <div class="info-card"><h2>Check color contrast</h2><p>Compare any two palette colors and see their contrast ratio plus WCAG AA guidance for normal text before using them in a UI.</p></div>
     </section>
     <section class="network">
       <div class="network-label">More from <strong>Every Tiny Tool ✦</strong></div>
