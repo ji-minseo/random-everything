@@ -34,15 +34,20 @@
       <div>
         <label for="wheelItems">Wheel choices</label>
         <textarea id="wheelItems">Coffee&#10;Tea&#10;Matcha&#10;Lemonade</textarea>
-        <div class="actions"><button id="spin" class="btn">Spin the wheel</button></div>
+        <div class="wheel-options">
+          <label class="checkline"><input id="removeWinner" type="checkbox"> Remove winner after spin</label>
+          <label class="checkline"><input id="wheelSound" type="checkbox" checked> Sound</label>
+        </div>
+        <div class="actions"><button id="spin" class="btn">Spin the wheel</button><button id="shareWheel" class="btn secondary" type="button">Share wheel</button></div>
+        <div id="wheelShareStatus" class="inline-status" aria-live="polite"></div>
         <div class="result"><div class="result-label">Winner</div><div id="wheelResult" class="result-value">Spin it</div></div>
       </div>
     </section>
     <div class="ad-slot">Future ad space</div>
     <section class="info info-grid">
-      <div class="info-card"><h2>How to use the wheel</h2><p>Replace the sample choices with your own items and press Spin the wheel. Each listed item gets an equal slice of the wheel.</p></div>
-      <div class="info-card"><h2>Decision wheel or choice wheel</h2><p>Use this wheel when you need help choosing between meals, names, activities, chores, classroom picks or any list of options.</p></div>
-      <div class="info-card"><h2>Fast and local</h2><p>The wheel is created directly in your browser, so you can change the list and spin again immediately without creating an account.</p></div>
+      <div class="info-card"><h2>Spin without repeats</h2><p>Turn on Remove winner after spin when you are picking an order, presenters or multiple winners and do not want the same choice twice.</p></div>
+      <div class="info-card"><h2>Share the same wheel</h2><p>Share wheel creates a link containing the current choices, so someone else can open the same list without an account.</p></div>
+      <div class="info-card"><h2>Your last list is remembered</h2><p>The wheel stores your latest choices locally in this browser. You can come back later and keep spinning where you left off.</p></div>
     </section>
     <section class="network">
       <div class="network-label">More from <strong>Every Tiny Tool ✦</strong></div>

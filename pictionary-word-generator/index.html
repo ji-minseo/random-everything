@@ -34,14 +34,23 @@
         <div><label for="pictionaryType">Prompt type</label><select id="pictionaryType"><option value="word">Words</option><option value="phrase">Phrases</option></select></div>
         <div><label for="difficulty">Difficulty</label><select id="difficulty"><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select></div>
       </div>
-      <div class="result"><div class="result-label">Draw this</div><div id="wordResult" class="result-value">Ready</div></div>
-      <div class="actions"><button id="newWord" class="btn">New word</button></div>
+      <div class="row pictionary-filters">
+        <div><label for="pictionaryCategory">Category</label><select id="pictionaryCategory"><option value="all">All categories</option><option value="animals">Animals</option><option value="food">Food</option><option value="places">Places</option><option value="actions">Actions</option><option value="objects">Objects</option><option value="people">People</option></select></div>
+        <div><label for="promptCountSelect">How many?</label><select id="promptCountSelect"><option value="1">1 prompt</option><option value="3">3 prompts</option><option value="5">5 prompts</option><option value="10">10 prompts</option></select></div>
+      </div>
+      <div class="prompt-meta" id="promptCount"></div>
+      <div class="result pictionary-result"><div class="result-label">Draw this</div><div id="wordResult" class="result-value">Ready</div></div>
+      <div class="game-toolbar">
+        <div class="timer-card"><div><span class="timer-label">Round timer</span><strong id="timerDisplay">01:00</strong></div><select id="timerSeconds" aria-label="Timer length"><option value="30">30 sec</option><option value="60" selected>60 sec</option><option value="90">90 sec</option><option value="120">120 sec</option></select></div>
+        <div class="actions timer-actions"><button id="startTimer" class="btn secondary" type="button">Start timer</button><button id="resetTimer" class="btn secondary" type="button">Reset</button></div>
+      </div>
+      <div class="actions"><button id="newWord" class="btn">New prompt</button><button id="resetPrompts" class="btn secondary" type="button">Reset used prompts</button></div>
     </section>
     <div class="ad-slot">Future ad space</div>
     <section class="info info-grid">
-      <div class="info-card"><h2>Words or Pictionary phrases</h2><p>Choose Words for classic single-word prompts or Phrases for multi-word drawing challenges, then pick Easy, Medium or Hard.</p></div>
-      <div class="info-card"><h2>Pick a difficulty</h2><p>Easy words suit quick family games, while Medium and Hard add more unusual objects, ideas and situations for competitive groups.</p></div>
-      <div class="info-card"><h2>No cards to prepare</h2><p>The word list is built into the page, so you can open the tool on a phone or laptop and start a drawing round immediately.</p></div>
+      <div class="info-card"><h2>360 built-in prompts</h2><p>Choose words or phrases across six categories and three difficulty levels, with enough variety for longer game sessions.</p></div>
+      <div class="info-card"><h2>No repeats until the pool is used</h2><p>Prompts are shuffled into a deck for your current filters. A prompt will not repeat until that filtered deck has been exhausted.</p></div>
+      <div class="info-card"><h2>Timer included</h2><p>Run 30, 60, 90 or 120 second rounds directly on the page, with a short sound when time is up.</p></div>
     </section>
     <section class="network">
       <div class="network-label">More from <strong>Every Tiny Tool ✦</strong></div>
