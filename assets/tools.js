@@ -316,21 +316,51 @@ function renderGroups(container, groups, label="Group") {
 function groupsToText(groups,label="Group"){
   return groups.map((group,i)=>`${label} ${i+1}: ${group.join(", ")}`).join("\n");
 }
+function renderEditableTeams(container,groups,onMove){
+  container.innerHTML=groups.map((team,i)=>`<section class="team editable-team" data-team="${i}"><h3>Team ${i+1}</h3><ul>${team.map((name,j)=>`<li class="team-member" draggable="true" data-team="${i}" data-member="${j}">${escapeHtml(name)}</li>`).join("")}</ul></section>`).join("");
+  container.querySelectorAll(".team-member").forEach(li=>li.addEventListener("dragstart",ev=>{
+    ev.dataTransfer.setData("text/plain",JSON.stringify({team:Number(li.dataset.team),member:Number(li.dataset.member)}));
+    li.classList.add("dragging");
+  }));
+  container.querySelectorAll(".team-member").forEach(li=>li.addEventListener("dragend",()=>li.classList.remove("dragging")));
+  container.querySelectorAll(".editable-team").forEach(team=>{
+    team.addEventListener("dragover",ev=>{ev.preventDefault();team.classList.add("dragover")});
+    team.addEventListener("dragleave",()=>team.classList.remove("dragover"));
+    team.addEventListener("drop",ev=>{
+      ev.preventDefault();team.classList.remove("dragover");
+      try{const src=JSON.parse(ev.dataTransfer.getData("text/plain"));onMove(src.team,src.member,Number(team.dataset.team))}catch{}
+    });
+  });
+}
 function initTeams() {
   let latest=[];
-  const build=()=>{
-    const names=parseItems($("#names").value),count=Math.max(2,Math.min(Number($("#teamCount").value)||2,Math.max(2,names.length)));
-    const container=$("#teamsResult");
-    if(names.length<2){container.innerHTML="<div class='team'><h3>Add at least two names</h3></div>";latest=[];return}
-    latest=Array.from({length:Math.min(count,names.length)},()=>[]);
-    shuffle(names).forEach((person,index)=>latest[index%latest.length].push(person));
-    renderGroups(container,latest,"Team");
-    $("#teamSummary").textContent=`${names.length} people · ${latest.length} teams · sizes ${latest.map(t=>t.length).join(" / ")}`;
-    ["#reshuffleTeams","#copyTeams","#spinTeams"].forEach(s=>$(s).disabled=false);
+  const mode=$("#teamMode"),value=$("#teamCount"),label=$("#teamValueLabel");
+  const syncMode=()=>{
+    const bySize=mode.value==="size";
+    label.textContent=bySize?"People per team":"Number of teams";
+    value.min=bySize?"1":"2";
   };
+  const render=()=>{
+    renderEditableTeams($("#teamsResult"),latest,(fromTeam,memberIndex,toTeam)=>{
+      if(fromTeam===toTeam)return;
+      const [person]=latest[fromTeam].splice(memberIndex,1);if(!person)return;
+      latest[toTeam].push(person);latest=latest.filter(t=>t.length);render();
+    });
+    const total=latest.reduce((n,t)=>n+t.length,0);
+    $("#teamSummary").textContent=latest.length?`${total} people · ${latest.length} teams · sizes ${latest.map(t=>t.length).join(" / ")} · drag names to adjust`:"";
+    ["#reshuffleTeams","#copyTeams","#spinTeams"].forEach(sel=>$(sel).disabled=!latest.length);
+  };
+  const build=()=>{
+    const names=parseItems($("#names").value),raw=Math.max(1,Number(value.value)||2);
+    if(names.length<2){$("#teamsResult").innerHTML="<div class='team'><h3>Add at least two names</h3></div>";latest=[];render();return}
+    const count=mode.value==="size"?Math.ceil(names.length/raw):Math.max(2,Math.min(Math.trunc(raw),names.length));
+    latest=Array.from({length:Math.max(1,count)},()=>[]);
+    shuffle(names).forEach((person,index)=>latest[index%latest.length].push(person));render();
+  };
+  mode.addEventListener("change",syncMode);syncMode();
   $("#makeTeams").addEventListener("click",build);
   $("#reshuffleTeams").addEventListener("click",build);
-  $("#copyTeams").addEventListener("click",e=>latest.length&&copyText(groupsToText(latest,"Team"),e.currentTarget));
+  $("#copyTeams").addEventListener("click",ev=>latest.length&&copyText(groupsToText(latest,"Team"),ev.currentTarget));
   $("#spinTeams").addEventListener("click",()=>latest.length&&(location.href=wheelLink(latest.map((_,i)=>`Team ${i+1}`))));
 }
 

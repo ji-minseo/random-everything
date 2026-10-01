@@ -180,6 +180,12 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
 .contrast-status{color:var(--muted);font-size:12px;font-weight:750}
 .contrast-preview{margin-top:12px;padding:22px;border-radius:14px;text-align:center;font-size:22px;font-weight:900;border:1px solid rgba(0,0,0,.08)}
 
+
+.editable-team{transition:border-color .15s ease,background .15s ease}
+.editable-team.dragover{border-color:var(--accent);background:var(--accent-soft)}
+.team-member{margin:5px 0;padding:7px 9px;border:1px solid #ededed;border-radius:10px;background:#fff;cursor:grab;list-style-position:inside}
+.team-member.dragging{opacity:.45}
+
 .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
 .btn {
   border: 0; border-radius: 14px; padding: 12px 17px; font-weight: 800;

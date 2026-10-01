@@ -32,7 +32,11 @@
     <section class="panel">
       <div class="row">
         <div><label for="names">Names</label><textarea id="names" placeholder="Alex&#10;Sam&#10;Taylor&#10;Jordan"></textarea></div>
-        <div><label for="teamCount">Number of teams</label><input id="teamCount" type="number" min="2" value="2"><p class="note">Names are shuffled locally in your browser.</p></div>
+        <div>
+          <label for="teamMode">Split by</label><select id="teamMode"><option value="count">Number of teams</option><option value="size">People per team</option></select>
+          <div style="margin-top:12px"><label id="teamValueLabel" for="teamCount">Number of teams</label><input id="teamCount" type="number" min="2" value="2"></div>
+          <p class="note">Names are shuffled locally in your browser.</p>
+        </div>
       </div>
       <div class="actions"><button id="makeTeams" class="btn">Make teams</button><button id="reshuffleTeams" class="btn secondary" type="button" disabled>Reshuffle</button><button id="copyTeams" class="btn secondary" type="button" disabled>Copy teams</button><button id="spinTeams" class="btn secondary" type="button" disabled>Spin team order</button></div>
       <div id="teamSummary" class="list-meta"></div>
@@ -41,8 +45,8 @@
     <div class="ad-slot">Future ad space</div>
     <section class="info info-grid">
       <div class="info-card"><h2>Balanced random teams</h2><p>Paste the names, choose how many teams you need and shuffle. People are distributed round-robin so team sizes stay as even as possible.</p></div>
-      <div class="info-card"><h2>Useful for groups</h2><p>Random teams work well for classrooms, workshops, sports, party games and casual events where you want a quick neutral split.</p></div>
-      <div class="info-card"><h2>Runs in your browser</h2><p>The names you enter are processed locally. The tool does not require an account or upload your list to create the teams.</p></div>
+      <div class="info-card"><h2>Team count or team size</h2><p>Split by the exact number of teams or by how many people should be on each team. Team sizes stay within one person when possible.</p></div>
+      <div class="info-card"><h2>Adjust teams by dragging</h2><p>After shuffling, drag a name from one team to another for final manual changes, then copy the adjusted result.</p></div>
     </section>
     <section class="network">
       <div class="network-label">More from <strong>Every Tiny Tool ✦</strong></div>
