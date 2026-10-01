@@ -488,6 +488,11 @@ function initPictionary() {
     const left=deck?.length ?? pool.length;
     promptMeta.textContent=`${totalBuiltIn} prompts built in · ${pool.length} match these filters · ${left} left before repeats`;
   };
+  const renderHistory=()=>{
+    const box=$("#pictionaryHistory");
+    box.innerHTML=history.map((set,i)=>`<button type="button" class="history-row" data-pic-history="${i}">${escapeHtml(set.join(" · "))}</button>`).join("");
+    box.querySelectorAll("[data-pic-history]").forEach(btn=>btn.addEventListener("click",()=>copyText(history[Number(btn.dataset.picHistory)].join("\n"),btn)));
+  };
   const draw = () => {
     const pool=poolFor();
     if(!pool.length){output.textContent="No prompts match these filters";return}
@@ -589,7 +594,12 @@ function initNumber() {
 const firstNames = ["Avery","Mia","Noah","Liam","Emma","Lucas","Sofia","Leo","Chloe","Ethan","Maya","Theo","Ella","Owen","Lily","Kai","Nora","Milo","Zoe","Finn","Ivy","Aria","Jude","Ruby","Ezra","Luna","Alex","Sam","Taylor","Jordan","Riley","Casey","Jamie","Morgan","Quinn","Rowan","Skyler","Parker","Reese","Cameron","Amelia","Olivia","Isla","Grace","Hazel","Violet","Lucy","Stella","Claire","Alice","Eva","Naomi","Elena","Iris","Wren","Maeve","June","Rose","Nina","Lena","Henry","Jack","Oliver","Elijah","Mateo","Julian","Asher","Miles","Felix","Silas","Caleb","Eli","Oscar","Arthur","Hugo","Max","Cole","Dean","Nico","Remy","Drew","Blake","Charlie","Logan","Micah","Sage","Emery","Dakota","Harper","Sydney","Bailey","Ariel","Robin","Jesse","Shawn","Devon","Toby","Mason","Evan","Ian","Adam","Aaron","Dylan","Wyatt","Roman","Louis","Simon","Ben","Luke"];
 const lastNames = ["Anderson","Bennett","Brooks","Carter","Clark","Collins","Cooper","Davis","Evans","Foster","Gray","Green","Hall","Hayes","Hill","Howard","James","Kelly","Lee","Lewis","Martin","Miller","Moore","Morgan","Parker","Reed","Rivera","Scott","Smith","Stone","Taylor","Thomas","Turner","Walker","Ward","White","Wilson","Wright","Young","King","Adams","Allen","Bailey","Baker","Bell","Brown","Campbell","Cook","Cox","Diaz","Edwards","Fisher","Flores","Garcia","Gomez","Gonzalez","Griffin","Harris","Hughes","Jackson","Jenkins","Johnson","Jones","Kim","Lopez","Martinez","Mitchell","Murphy","Nelson","Nguyen","Ortiz","Patel","Perez","Perry","Phillips","Price","Ramirez","Roberts","Robinson","Rodriguez","Rogers","Ross","Russell","Sanchez","Sanders","Stewart","Sullivan","Thompson","Torres","Washington","Watson","Williams","Wood","Barnes","Coleman","Powell","Long","Patterson","Henderson","Bryant","Alexander"];
 function initName() {
-  const output=$("#nameResult"),meta=$("#namePoolMeta");
+  const output=$("#nameResult"),meta=$("#namePoolMeta"),history=[];
+  const renderHistory=()=>{
+    const box=$("#nameHistory");
+    box.innerHTML=history.map((set,i)=>`<button type="button" class="history-row" data-name-history="${i}">${escapeHtml(set.join(" · "))}</button>`).join("");
+    box.querySelectorAll("[data-name-history]").forEach(btn=>btn.addEventListener("click",()=>copyText(history[Number(btn.dataset.nameHistory)].join("\n"),btn)));
+  };
   const generate=()=>{
     const count=Math.max(1,Math.min(20,Math.trunc(Number($("#nameCount").value))||1)),style=$("#nameStyle")?.value||"full";
     const names=new Set(),maxUnique=style==="first"?firstNames.length:style==="last"?lastNames.length:firstNames.length*lastNames.length,target=Math.min(count,maxUnique);
@@ -598,7 +608,8 @@ function initName() {
       else if(style==="last")names.add(sample(lastNames));
       else names.add(`${sample(firstNames)} ${sample(lastNames)}`);
     }
-    output.textContent=[...names].join(" · ");
+    const result=[...names];output.textContent=result.join(" · ");
+    history.unshift(result);history.splice(5);renderHistory();
     meta.textContent=`${firstNames.length} first names · ${lastNames.length} last names · ${(firstNames.length*lastNames.length).toLocaleString()} full-name combinations`;
   };
   $("#generateName").addEventListener("click",generate);
@@ -613,7 +624,7 @@ const randomWords = {
   adjective: ["bright","calm","clever","cozy","curious","gentle","golden","happy","hidden","icy","lucky","messy","quiet","rapid","round","shiny","silent","soft","strange","sunny","tiny","wild","witty","brave","crisp","dreamy","fresh","playful","simple","vivid","ancient","bouncy","cloudy","dusty","fancy","fuzzy","glossy","graceful","hungry","jolly","kind","lively","misty","narrow","polite","proud","rough","sleepy","smooth","spicy","stormy","striped","tasty","thirsty","twisted","warm","wooden","young","zany","bitter","careful","delicate","eager","fragile","giant","hollow","jagged","massive","modern","mysterious","ordinary","peaceful","powerful","remote","rusty","shallow","sparkling","steady","uneven"]
 };
 function initWord() {
-  const output=$("#randomWordResult"),meta=$("#wordPoolMeta"),decks=new Map();
+  const output=$("#randomWordResult"),meta=$("#wordPoolMeta"),decks=new Map(),history=[];
   const poolFor=()=>{
     const category=$("#wordCategory").value,length=$("#wordLength").value,start=($("#wordStartsWith").value||"").trim().toLowerCase();
     let pool=category==="all"?[...randomWords.noun,...randomWords.verb,...randomWords.adjective]:[...randomWords[category]];
@@ -633,11 +644,16 @@ function initWord() {
     const pool=poolFor(),deck=decks.get(key());
     meta.textContent=`${pool.length} words match · ${deck?.length??pool.length} left before repeats`;
   };
+  const renderHistory=()=>{
+    const box=$("#wordHistory");
+    box.innerHTML=history.map((set,i)=>`<button type="button" class="history-row" data-word-history="${i}">${escapeHtml(set.join(" · "))}</button>`).join("");
+    box.querySelectorAll("[data-word-history]").forEach(btn=>btn.addEventListener("click",()=>copyText(history[Number(btn.dataset.wordHistory)].join("\n"),btn)));
+  };
   const generate=()=>{
     const pool=poolFor();if(!pool.length){output.textContent="No words match these filters";updateMeta();return}
     const count=Math.min(Math.max(1,Math.min(20,Math.trunc(Number($("#wordCount").value))||1)),pool.length),picks=[];
     while(picks.length<count)picks.push(getDeck().pop());
-    output.textContent=picks.join(" · ");updateMeta();
+    output.textContent=picks.join(" · ");history.unshift([...picks]);history.splice(5);renderHistory();updateMeta();
   };
   $("#generateWord").addEventListener("click",generate);
   $("#copyWords").addEventListener("click",e=>copyText(output.textContent.replaceAll(" · ","\n"),e.currentTarget));
@@ -697,6 +713,7 @@ function initYesNo() {
     },760);
   });
   $("#includeMaybe").addEventListener("change",render);
+  $("#copyYesNo").addEventListener("click",ev=>copyText(output.textContent,ev.currentTarget));
   $("#resetYesNo").addEventListener("click",()=>{
     answers.length=0;render();output.textContent="Ask, then tap";label.textContent="Answer";$("#answerYesNo").textContent="Flip for an answer";
   });
