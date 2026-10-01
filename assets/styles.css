@@ -203,6 +203,11 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
 @keyframes coin-yes{to{transform:rotateY(1080deg)}}
 @keyframes coin-no{to{transform:rotateY(1260deg)}}
 
+
+.choice-controls{align-items:end;margin-top:8px}
+.choice-stack{display:grid;gap:8px;font-size:clamp(18px,3vw,27px);line-height:1.25}
+.choice-stack div{display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px;align-items:start}
+.choice-stack span{display:grid;place-items:center;width:25px;height:25px;border-radius:999px;background:var(--accent-soft);color:var(--accent-strong);font-size:11px;font-weight:900}
 .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
 .btn {
   border: 0; border-radius: 14px; padding: 12px 17px; font-weight: 800;
@@ -238,7 +243,7 @@ textarea:focus, input:focus, select:focus { border-color: var(--accent); box-sha
 .wheel {
   position: relative; width: min(74vw, 350px); aspect-ratio: 1; border-radius: 50%;
   border: 10px solid #fff; outline: 1px solid var(--line); box-shadow: var(--shadow);
-  transition: transform 3.4s cubic-bezier(.16,.72,.12,1);
+  transition: transform 3.8s cubic-bezier(.14,.72,.10,1);
 }
 .wheel::after {
   content: ""; position: absolute; width: 42px; height: 42px; border-radius: 50%;

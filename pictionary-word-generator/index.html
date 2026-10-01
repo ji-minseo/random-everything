@@ -39,12 +39,12 @@
         <div><label for="promptCountSelect">How many?</label><select id="promptCountSelect"><option value="1">1 prompt</option><option value="3">3 prompts</option><option value="5">5 prompts</option><option value="10">10 prompts</option></select></div>
       </div>
       <div class="prompt-meta" id="promptCount"></div>
-      <div class="result pictionary-result"><div class="result-label">Draw this</div><div id="wordResult" class="result-value">Ready</div></div>
+      <div class="result pictionary-result"><div class="result-label">Draw this</div><div id="wordResult" class="result-value">Ready</div><div id="promptHistory" class="result-history"></div></div>
       <div class="game-toolbar">
         <div class="timer-card"><div><span class="timer-label">Round timer</span><strong id="timerDisplay">01:00</strong></div><select id="timerSeconds" aria-label="Timer length"><option value="30">30 sec</option><option value="60" selected>60 sec</option><option value="90">90 sec</option><option value="120">120 sec</option></select></div>
         <div class="actions timer-actions"><button id="startTimer" class="btn secondary" type="button">Start timer</button><button id="resetTimer" class="btn secondary" type="button">Reset</button></div>
       </div>
-      <div class="actions"><button id="newWord" class="btn">New prompt</button><button id="resetPrompts" class="btn secondary" type="button">Reset used prompts</button></div>
+      <div class="actions"><button id="newWord" class="btn">New prompt</button><button id="copyPrompts" class="btn secondary" type="button">Copy prompt(s)</button><button id="resetPrompts" class="btn secondary" type="button">Reset used prompts</button></div>
     </section>
     <div class="ad-slot">Future ad space</div>
     <section class="info info-grid">

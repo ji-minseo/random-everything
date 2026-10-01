@@ -130,22 +130,33 @@ function initColor() {
 }
 
 function initChoice() {
-  const output=$("#choiceResult"),input=$("#items"),historyEl=$("#choiceHistory"),countEl=$("#choiceCount");
+  const output=$("#choiceResult"),input=$("#items"),historyEl=$("#choiceHistory"),countEl=$("#choiceCount"),pickCount=$("#choicePickCount");
   const history=[];
-  const syncCount=()=>{const n=parseItems(input.value).length;countEl.textContent=`${n} choice${n===1?"":"s"}`;$("#spinChoices").disabled=n<2};
+  const syncCount=()=>{
+    const n=parseItems(input.value).length;
+    countEl.textContent=`${n} choice${n===1?"":"s"}`;
+    pickCount.max=String(Math.max(1,Math.min(20,n||20)));
+    if(Number(pickCount.value)>Number(pickCount.max))pickCount.value=pickCount.max;
+    $("#spinChoices").disabled=n<2;
+  };
   const renderHistory=()=>historyEl.textContent=history.length>1?"Recent: "+history.join(" · "):"";
   $("#pick").addEventListener("click",()=>{
     const items=parseItems(input.value);
     if(!items.length){output.textContent="Add at least one choice";return}
-    const picked=sample(items);output.textContent=picked;history.unshift(picked);history.splice(5);renderHistory();
+    const count=Math.max(1,Math.min(Number(pickCount.value)||1,items.length,20));
+    const picks=shuffle(items).slice(0,count);
+    output.innerHTML=count===1?escapeHtml(picks[0]):`<div class="choice-stack">${picks.map((p,i)=>`<div><span>${i+1}</span>${escapeHtml(p)}</div>`).join("")}</div>`;
+    history.unshift(count===1?picks[0]:picks.join(" → "));history.splice(5);renderHistory();
     if($("#removePicked").checked){
-      const i=items.indexOf(picked);items.splice(i,1);input.value=items.join("\n");syncCount();
+      const remaining=[...items];
+      picks.forEach(p=>{const i=remaining.indexOf(p);if(i>=0)remaining.splice(i,1)});
+      input.value=remaining.join("\n");syncCount();
     }
   });
   $("#example").addEventListener("click",()=>{input.value="Pizza\nTacos\nPasta\nSushi";syncCount()});
-  $("#copyChoice").addEventListener("click",e=>copyText(output.textContent,e.currentTarget));
+  $("#copyChoice").addEventListener("click",ev=>copyText(output.innerText.replaceAll("\n"," → "),ev.currentTarget));
   $("#spinChoices").addEventListener("click",()=>{const items=parseItems(input.value);if(items.length>=2)location.href=wheelLink(items)});
-  input.addEventListener("input",syncCount);syncCount();
+  input.addEventListener("input",syncCount);pickCount.addEventListener("input",syncCount);syncCount();
 }
 
 function colorsFor(count) {
@@ -166,6 +177,7 @@ function initWheel() {
   const shareStatus = $("#wheelShareStatus");
   let rotation = 0;
   let spinning = false;
+  const history = [];
   const storageKey = "randomEverythingWheel";
 
   const loadStored = () => {
@@ -181,6 +193,7 @@ function initWheel() {
       if (saved?.items) input.value = saved.items;
       if (typeof saved?.remove === "boolean") removeWinner.checked = saved.remove;
       if (typeof saved?.sound === "boolean") soundToggle.checked = saved.sound;
+      if (Array.isArray(saved?.history)) history.push(...saved.history.slice(0,10));
     } catch {}
   };
   const saveStored = () => {
@@ -188,7 +201,8 @@ function initWheel() {
       localStorage.setItem(storageKey, JSON.stringify({
         items: input.value,
         remove: removeWinner.checked,
-        sound: soundToggle.checked
+        sound: soundToggle.checked,
+        history: history.slice(0,10)
       }));
     } catch {}
   };
@@ -252,10 +266,16 @@ function initWheel() {
     document.body.appendChild(layer);setTimeout(()=>layer.remove(),1900);
   };
 
-  loadStored();
+  const renderHistory=()=>{
+    const el=$("#wheelHistory");
+    el.textContent=history.length?"Recent winners: "+history.slice(0,8).join(" · "):"";
+  };
+  loadStored();renderHistory();
   input.addEventListener("input", sync);
   removeWinner.addEventListener("change", saveStored);
   soundToggle.addEventListener("change", saveStored);
+
+  $("#copyWheelResult").addEventListener("click",e=>copyText(output.textContent,e.currentTarget));
 
   $("#shareWheel").addEventListener("click", async e => {
     const items = parseItems(input.value);
@@ -294,6 +314,8 @@ function initWheel() {
     setTimeout(() => {
       const winner = items[winnerIndex];
       output.textContent = winner;
+      history.unshift(winner);history.splice(10);renderHistory();saveStored();
+      $("#spin").textContent = "Spin again";
       audioTone(660,.16,.055);setTimeout(()=>audioTone(880,.18,.05),120);
       celebrate();
       if (removeWinner.checked) {
@@ -435,8 +457,8 @@ function initPictionary() {
   const output = $("#wordResult");
   const typeEl = $("#pictionaryType"), diffEl = $("#difficulty"), catEl = $("#pictionaryCategory"), countEl = $("#promptCountSelect");
   const promptMeta = $("#promptCount");
-  const decks = new Map();
-  let timerId = null, remaining = 60;
+  const decks = new Map(), roundHistory=[];
+  let timerId = null, remaining = 60, currentPrompts=[];
 
   const poolFor = () => {
     const type = typeEl?.value || "word", difficulty = diffEl?.value || "easy", category = catEl?.value || "all";
@@ -468,8 +490,11 @@ function initPictionary() {
       if(!deck.length)continue;
       picks.push(deck.pop());
     }
+    currentPrompts=picks.map(p=>p.text);
     if(picks.length===1) output.textContent=picks[0].text;
     else output.innerHTML=`<div class="prompt-stack">${picks.map((p,i)=>`<div><span>${i+1}</span>${escapeHtml(p.text)}</div>`).join("")}</div>`;
+    roundHistory.unshift(currentPrompts.join(" / "));roundHistory.splice(5);
+    $("#promptHistory").textContent=roundHistory.length>1?"Recent rounds: "+roundHistory.slice(1).join(" · "):"";
     updateMeta();
   };
   const resetDeck = () => { decks.delete(deckKey()); draw(); };
@@ -498,6 +523,7 @@ function initPictionary() {
   $("#resetTimer").addEventListener("click",resetTimer);
   $("#timerSeconds").addEventListener("change",resetTimer);
   $("#newWord").addEventListener("click",draw);
+  $("#copyPrompts").addEventListener("click",ev=>copyText(currentPrompts.join("\n"),ev.currentTarget));
   $("#resetPrompts").addEventListener("click",resetDeck);
   [typeEl,diffEl,catEl,countEl].forEach(el=>el?.addEventListener("change",()=>{
     if(el!==countEl) decks.delete(deckKey());
@@ -635,8 +661,8 @@ function initYesNo() {
   const output=$("#yesNoResult"),historyEl=$("#yesNoHistory"),label=$("#yesNoLabel"),coin=$("#yesNoCoin"),answers=[];
   let flipping=false;
   const render=()=>{
-    const yes=answers.filter(a=>a==="Yes").length,no=answers.length-yes;
-    historyEl.textContent=answers.length?`Recent: ${answers.slice(0,8).join(" · ")} · Yes ${yes} / No ${no}`:"";
+    const yes=answers.filter(a=>a==="Yes").length,no=answers.filter(a=>a==="No").length,maybe=answers.filter(a=>a==="Maybe").length;
+    historyEl.textContent=answers.length?`Recent: ${answers.slice(0,8).join(" · ")} · Yes ${yes} / No ${no}${maybe?" / Maybe "+maybe:""}`:"";
   };
   const beep=()=>{
     if(!$("#yesNoSound").checked)return;
@@ -648,8 +674,12 @@ function initYesNo() {
   };
   $("#answerYesNo").addEventListener("click",()=>{
     if(flipping)return;flipping=true;$("#answerYesNo").disabled=true;
-    const answer=randomFloat()<.5?"Yes":"No",question=$("#yesNoQuestion").value.trim();
-    coin.classList.remove("flip-yes","flip-no");void coin.offsetWidth;coin.classList.add(answer==="Yes"?"flip-yes":"flip-no");
+    const pool=$("#yesNoMaybe").checked?["Yes","No","Maybe"]:["Yes","No"];
+    const answer=sample(pool),question=$("#yesNoQuestion").value.trim();
+    const faces=coin.querySelectorAll("span");
+    faces[0].textContent=answer==="Maybe"?"MAYBE":"YES";faces[1].textContent=answer==="Maybe"?"MAYBE":"NO";
+    coin.classList.remove("flip-yes","flip-no");void coin.offsetWidth;
+    coin.classList.add(answer==="No"?"flip-no":"flip-yes");
     output.textContent="Flipping…";label.textContent=question||"Answer";
     setTimeout(()=>{
       output.textContent=answer;answers.unshift(answer);answers.splice(20);render();beep();
@@ -657,8 +687,10 @@ function initYesNo() {
       $("#answerYesNo").textContent="Flip again";$("#answerYesNo").disabled=false;flipping=false;
     },760);
   });
+  $("#copyYesNo").addEventListener("click",ev=>copyText(output.textContent,ev.currentTarget));
   $("#resetYesNo").addEventListener("click",()=>{
     answers.length=0;render();output.textContent="Ask, then tap";label.textContent="Answer";$("#answerYesNo").textContent="Flip for an answer";
+    const faces=coin.querySelectorAll("span");faces[0].textContent="YES";faces[1].textContent="NO";
   });
 }
 

@@ -32,14 +32,14 @@
     <section class="panel">
       <label for="items">Your choices</label>
       <textarea id="items" placeholder="Pizza&#10;Tacos&#10;Pasta&#10;Sushi"></textarea>
-      <div class="list-meta" id="choiceCount">0 choices</div>
-      <label class="checkline option-strip"><input id="removePicked" type="checkbox"> Remove each picked choice from the list</label>
+      <div class="row choice-controls"><div><div class="list-meta" id="choiceCount">0 choices</div></div><div><label for="choicePickCount">How many picks?</label><input id="choicePickCount" type="number" min="1" max="20" value="1"></div></div>
+      <label class="checkline option-strip"><input id="removePicked" type="checkbox"> Remove picked choices from the list</label>
       <div class="actions"><button id="pick" class="btn">Pick one</button><button id="example" class="btn secondary" type="button">Use example</button><button id="copyChoice" class="btn secondary" type="button">Copy result</button><button id="spinChoices" class="btn secondary" type="button">Spin these choices</button></div>
       <div class="result"><div class="result-label">Random pick</div><div id="choiceResult" class="result-value">Ready when you are</div><div id="choiceHistory" class="result-history"></div></div>
     </section>
     <div class="ad-slot">Future ad space</div>
     <section class="info info-grid">
-      <div class="info-card"><h2>Pick once or without repeats</h2><p>Add one option per line or separate choices with commas. Turn on Remove each picked choice when you want to work through the list without repeats.</p></div>
+      <div class="info-card"><h2>Pick one or build an order</h2><p>Add one option per line or separate choices with commas, then choose how many unique picks you want at once. Remove picked choices when you want to work through the list without repeats.</p></div>
       <div class="info-card"><h2>What can I decide?</h2><p>Try meals, movies, tasks, travel ideas, names, games, chores or any short list where you want a neutral tie-breaker instead of another round of debating.</p></div>
       <div class="info-card"><h2>No account needed</h2><p>Your list stays in the current browser session. There is no login, upload step or server-side list storage.</p></div>
     </section>
