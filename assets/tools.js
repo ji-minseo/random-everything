@@ -581,14 +581,15 @@ const randomWords = {
 function initWord() {
   const output=$("#randomWordResult"),meta=$("#wordPoolMeta"),decks=new Map();
   const poolFor=()=>{
-    const category=$("#wordCategory").value,length=$("#wordLength").value;
+    const category=$("#wordCategory").value,length=$("#wordLength").value,start=($("#wordStartsWith").value||"").trim().toLowerCase();
     let pool=category==="all"?[...randomWords.noun,...randomWords.verb,...randomWords.adjective]:[...randomWords[category]];
     if(length==="short")pool=pool.filter(w=>w.length<=5);
     if(length==="medium")pool=pool.filter(w=>w.length>=6&&w.length<=8);
     if(length==="long")pool=pool.filter(w=>w.length>=9);
+    if(start)pool=pool.filter(w=>w.toLowerCase().startsWith(start));
     return [...new Set(pool)];
   };
-  const key=()=>`${$("#wordCategory").value}|${$("#wordLength").value}`;
+  const key=()=>`${$("#wordCategory").value}|${$("#wordLength").value}|${($("#wordStartsWith").value||"").trim().toLowerCase()}`;
   const getDeck=()=>{
     const k=key(),pool=poolFor();let deck=decks.get(k);
     if(!deck?.length){deck=shuffle(pool);decks.set(k,deck)}
@@ -609,6 +610,7 @@ function initWord() {
   $("#resetWordDeck").addEventListener("click",()=>{decks.delete(key());generate()});
   $("#wordCategory").addEventListener("change",generate);
   $("#wordLength").addEventListener("change",generate);
+  $("#wordStartsWith").addEventListener("input",generate);
   generate();
 }
 
