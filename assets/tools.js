@@ -37,10 +37,19 @@ async function copyText(text, button) {
   try {
     await navigator.clipboard.writeText(text);
     if (button.children.length) {
-      const oldTitle = button.title;
-      button.title = "Copied!";
-      setTimeout(() => button.title = oldTitle, 1100);
-      return;
+      const label = button.querySelector("span");
+      const value = button.querySelector("strong");
+      if (label && value) {
+        const oldLabel = label.textContent;
+        const oldValue = value.textContent;
+        label.textContent = "Copied!";
+        value.textContent = "✓";
+        setTimeout(() => {
+          label.textContent = oldLabel;
+          value.textContent = oldValue;
+        }, 1100);
+        return;
+      }
     }
     const old = button.textContent;
     button.textContent = "Copied!";
