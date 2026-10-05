@@ -36,6 +36,12 @@ function wheelLink(items) {
 async function copyText(text, button) {
   try {
     await navigator.clipboard.writeText(text);
+    if (button.children.length) {
+      const oldTitle = button.title;
+      button.title = "Copied!";
+      setTimeout(() => button.title = oldTitle, 1100);
+      return;
+    }
     const old = button.textContent;
     button.textContent = "Copied!";
     setTimeout(() => button.textContent = old, 1100);
