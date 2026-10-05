@@ -392,7 +392,13 @@ function initTeams() {
   };
   const build=()=>{
     const names=parseItems($("#names").value),raw=Math.max(1,Number(value.value)||2);
-    if(names.length<2){$("#teamsResult").innerHTML="<div class='team'><h3>Add at least two names</h3></div>";latest=[];render();return}
+    if(names.length<2){
+      latest=[];
+      $("#teamsResult").innerHTML="<div class='team'><h3>Add at least two names</h3></div>";
+      $("#teamSummary").textContent="";
+      ["#reshuffleTeams","#copyTeams","#spinTeams"].forEach(sel=>$(sel).disabled=true);
+      return;
+    }
     const count=mode.value==="size"?Math.ceil(names.length/raw):Math.max(2,Math.min(Math.trunc(raw),names.length));
     latest=Array.from({length:Math.max(1,count)},()=>[]);
     shuffle(names).forEach((person,index)=>latest[index%latest.length].push(person));render();
