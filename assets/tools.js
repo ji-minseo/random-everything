@@ -150,7 +150,7 @@ function initChoice() {
   const syncCount=()=>{
     const n=parseItems(input.value).length;
     countEl.textContent=`${n} choice${n===1?"":"s"}`;
-    $("#spinChoices").disabled=n<2;$("#randomOrder").disabled=n<2;
+    $("#spinChoices").disabled=n<2;
     pickCount.max=Math.max(1,n);if(Number(pickCount.value)>n&&n)pickCount.value=n;
   };
   const renderHistory=()=>historyEl.textContent=history.length>1?"Recent: "+history.join(" · "):"";
@@ -166,11 +166,6 @@ function initChoice() {
     if($("#removePicked").checked){
       const remove=new Set(picks);input.value=items.filter(item=>!remove.has(item)).join("\n");syncCount();
     }
-  });
-  $("#randomOrder").addEventListener("click",()=>{
-    const items=parseItems(input.value);
-    if(!items.length){output.textContent="Add at least one choice";return}
-    showPicks(shuffle(items));
   });
   $("#example").addEventListener("click",()=>{input.value="Pizza\nTacos\nPasta\nSushi";pickCount.value=1;syncCount()});
   $("#copyChoice").addEventListener("click",ev=>copyText(output.textContent.replaceAll(" → ","\n"),ev.currentTarget));
