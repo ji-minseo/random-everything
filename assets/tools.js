@@ -780,3 +780,15 @@ if (tool === "name") initName();
 if (tool === "word") initWord();
 if (tool === "groups") initGroups();
 if (tool === "yesno") initYesNo();
+
+
+function addSiteTrustLinks() {
+  const footer = document.querySelector(".footer");
+  if (!footer || footer.querySelector(".footer-trust-links")) return;
+  const nav = document.createElement("nav");
+  nav.className = "footer-trust-links";
+  nav.setAttribute("aria-label", "Site information");
+  nav.innerHTML = '<a href="https://everytinytool.com/">Every Tiny Tool</a><a href="https://everytinytool.com/about/">About</a><a href="https://everytinytool.com/privacy/">Privacy</a><a href="https://everytinytool.com/contact/">Contact</a>';
+  footer.appendChild(nav);
+}
+addSiteTrustLinks();
